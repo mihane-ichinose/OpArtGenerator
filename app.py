@@ -2,7 +2,7 @@
 # Now contains: Double quadratic, blaze study, parallelogram, kiss, waves and stripes.
 
 import random, math
-import cairocffi as cairo
+import cairo
 from scipy.stats import binom
 from flask import Flask, render_template, request
 
@@ -380,7 +380,6 @@ def output():
         accuracy = request.form.get('accuracy_input', type=float)
         # the three booleans below decide gradient colour
         isredgradient = request.form.get('isRedGradient_input', type=bool)
-        print(isredgradient)
         isgreengradient = request.form.get('isGreenGradient_input', type=bool)
         isbluegradient = request.form.get('isBlueGradient_input', type=bool)
     
@@ -622,7 +621,6 @@ def output():
                 elif (colourpattern == "random"):
 
                     isAdjacent = randomP(2) < adjacentprobability
-                    print(index)
                     isZebra = randomP(2) < adjacentprobability
                     fstColour = [random.choice(colours)[0], random.choice(colours)[1], random.choice(colours)[2]]
                     sndColour = [random.choice(colours)[0], random.choice(colours)[1], random.choice(colours)[2]]
@@ -640,12 +638,14 @@ def output():
                                         h += ws1[index]
                                         prev_o += math.tan(angle * math.pi / 180) * ws1[index]
                                         index += 1
+                                        if index >= num: break
                                 else:
-                                    if(ws2[index-valley] >= 0):
-                                        printDoubleQuad(h, v*round(maxwidth**offset) - prev_o, round(maxwidth**offset), ws2[index-valley], angle, cr, shape)
-                                        h += ws2[index-valley]
-                                        prev_o += math.tan(angle * math.pi / 180) * ws2[index-valley]
+                                    if(ws2[index-valley-1] >= 0):
+                                        printDoubleQuad(h, v*round(maxwidth**offset) - prev_o, round(maxwidth**offset), ws2[index-valley-1], angle, cr, shape)
+                                        h += ws2[index-valley-1]
+                                        prev_o += math.tan(angle * math.pi / 180) * ws2[index-valley-1]
                                         index += 1
+                                        if index >= num: break
                                 # Set no offset for squares and dots
                                 if (shape == "square" or shape == "dot"): prev_o = 0
                                 cr.set_source_rgba(sndColour[0], sndColour[1], sndColour[2], shapealpha)
@@ -655,12 +655,14 @@ def output():
                                         h += ws1[index]
                                         prev_o += math.tan(angle * math.pi / 180) * ws1[index]
                                         index += 1
+                                        if index >= num: break
                                 else:
-                                    if(ws2[index-valley] >= 0):
-                                        printDoubleQuad(h, v*round(maxwidth**offset) - prev_o, round(maxwidth**offset), ws2[index-valley], angle, cr, shape)
-                                        h += ws2[index-valley]
-                                        prev_o += math.tan(angle * math.pi / 180) * ws2[index-valley]
+                                    if(ws2[index-valley-1] >= 0):
+                                        printDoubleQuad(h, v*round(maxwidth**offset) - prev_o, round(maxwidth**offset), ws2[index-valley-1], angle, cr, shape)
+                                        h += ws2[index-valley-1]
+                                        prev_o += math.tan(angle * math.pi / 180) * ws2[index-valley-1]
                                         index += 1
+                                        if index >= num: break
                         else:
                             cr.set_source_rgba(random.choice(colours)[0], random.choice(colours)[1], random.choice(colours)[2], shapealpha)
                             for i in range (random.choice(ADJACENT)):
@@ -672,12 +674,14 @@ def output():
                                         h += ws1[index]
                                         prev_o += math.tan(angle * math.pi / 180) * ws1[index]
                                         index += 1
+                                        if index >= num: break
                                 else:
-                                    if(ws2[index-valley] >= 0):
-                                        printDoubleQuad(h, v*round(maxwidth**offset) - prev_o, round(maxwidth**offset), ws2[index-valley], angle, cr, shape)
-                                        h += ws2[index-valley]
-                                        prev_o += math.tan(angle * math.pi / 180) * ws2[index-valley]
+                                    if(ws2[index-valley-1] >= 0):
+                                        printDoubleQuad(h, v*round(maxwidth**offset) - prev_o, round(maxwidth**offset), ws2[index-valley-1], angle, cr, shape)
+                                        h += ws2[index-valley-1]
+                                        prev_o += math.tan(angle * math.pi / 180) * ws2[index-valley-1]
                                         index += 1
+                                        if index >= num: break
                     else:
                         # Set no offset for squares and dots
                         if (shape == "square" or shape == "dot"): prev_o = 0
@@ -688,12 +692,14 @@ def output():
                                 h += ws1[index]
                                 prev_o += math.tan(angle * math.pi / 180) * ws1[index]
                                 index += 1
+                                if index >= num: break
                         else:
-                            if(ws2[index-valley+1] >= 0):
-                                printDoubleQuad(h, v*round(maxwidth**offset) - prev_o, round(maxwidth**offset), ws2[index-valley], angle, cr, shape)
-                                h += ws2[index-valley]
-                                prev_o += math.tan(angle * math.pi / 180) * ws2[index-valley]
+                            if(ws2[index-valley-1] >= 0):
+                                printDoubleQuad(h, v*round(maxwidth**offset) - prev_o, round(maxwidth**offset), ws2[index-valley-1], angle, cr, shape)
+                                h += ws2[index-valley-1]
+                                prev_o += math.tan(angle * math.pi / 180) * ws2[index-valley-1]
                                 index += 1
+                                if index >= num: break
                 if (colourpattern == "check" or colourpattern == "gradient"):
                     # Set no offset for squares and dots
                     if (shape == "square" or shape == "dot"): prev_o = 0
@@ -703,13 +709,14 @@ def output():
                             h += ws1[index]
                             prev_o += math.tan(angle * math.pi / 180) * ws1[index]
                             index += 1
+                            if index >= num: break
                     else:
-                        print(ws2[index-valley])
                         if(ws2[index-valley] >= 0):
                             printDoubleQuad(h, v*round(maxwidth**offset) - prev_o, round(maxwidth**offset), ws2[index-valley], angle, cr, shape)
                             h += ws2[index-valley]
                             prev_o += math.tan(angle * math.pi / 180) * ws2[index-valley]
                             index += 1
+                            if index >= num: break
             v += 1
     elif (image == "blaze"):
         a = 0
