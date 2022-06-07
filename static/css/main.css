@@ -1,0 +1,215 @@
+@import url('https://rsms.me/inter/inter.css');
+
+:root {
+	--background-colour: #563F70;
+	--font-colour: #E8E8E8;
+	--button-colour: #656DBA;
+	--button-focus-colour: #4E5591;
+	--border-colour: #EB6383;
+	--knob-colour: #FF8F96;
+	--size-bezel: .5rem;
+
+	font-family: 'Inter', sans-serif;
+	font-size: calc(.6rem + .4vw);
+
+	font-weight: 500;
+	padding: 0 calc(var(--size-bezel) * 3);
+	text-align: center;
+}
+
+html, body {
+	background: var(--background-colour);
+	height: 90%;
+	width: 90%;
+	margin: auto;
+	padding: 0;
+	text-align: center;
+}
+
+.center {
+	margin-left: auto;
+	margin-right: auto;
+}
+
+img {
+	padding: 0;
+	display: block;
+	margin: 0 auto;
+	border-radius: 10px;
+}
+
+h1, h2, h3 {
+	font-weight: 900;
+	color: var(--font-colour);
+}
+
+p, span, th, td, label {
+	font-weight: 500;
+	color: var(--font-colour);
+	font-size: 20px;
+	line-height: 2;
+}
+
+label.checkBoxLabel {
+	cursor: pointer;
+	margin: 0;
+	text-align: left;
+}
+
+input:not(.button,.slider,.longTextBox,.longlongTextBox) {
+	width: 60px;
+}
+
+input.longTextBox {
+	width: 100px;
+}
+
+input.longlongTextBox {
+	width: 200px;
+}
+
+input:not(.button,.slider), select {
+	background-color: transparent;
+	border-style: groove;
+	border-width: 2px;
+	border-color: var(--border-colour);
+	border-radius: 10px;
+	color: var(--font-colour);
+	height: 30px;
+	font-size: 20px;
+	text-align: center;
+}
+
+input[type=checkbox] {
+	height: 24px;
+	cursor: pointer;
+	margin: 0;
+}
+
+select {
+	height: 40px;
+	cursor: pointer;
+}
+
+input.button, button, div.imageSelect, div.helpGuide {
+	cursor: pointer;
+	background-color: var(--button-colour);
+	color: var(--font-colour);
+	height: 30px;
+	font-size: 20px;
+	border: none;
+	border-radius: 10px;
+	box-shadow: 2px 2px #999;
+	transition: 0.5s;
+}
+
+.button:hover, button:hover, div.imageSelect:hover, div.helpGuide:hover {
+	box-shadow: 2px 2px #666;
+	background-color: var(--button-focus-colour);
+	transition: 0.5s;
+}
+
+.button:active, button:active, div.imageSelect:active, div.helpGuide:active {
+	box-shadow: 0 0 #666;
+	transform: translateX(2px) translateY(2px);
+	transition: 0.1s;
+}
+
+option {
+	background-color: var(--background-colour);
+}
+
+textarea:focus, input:focus, select:focus{
+    outline: none;
+}
+
+.slider {
+	-webkit-appearance: none;
+	height: 5px;
+	width: 30%;
+	border-radius: 5px;  
+	background: slategray;
+	outline: none;
+	opacity: 0.7;
+	-webkit-transition: .2s;
+	transition: opacity .2s;
+}
+
+/* Mouse-over effects */
+.slider:hover {
+  opacity: 1; /* Fully shown on mouse-over */
+}
+
+.slider::-webkit-slider-thumb {
+	-webkit-appearance: none;
+	appearance: none;
+	width: 15px;
+	height: 15px;
+	border-radius: 50%; 
+	background: var(--knob-colour);
+	cursor: pointer;
+}
+
+.slider::-moz-range-thumb {
+	width: 15px;
+	height: 15px;
+	border-radius: 50%;
+	background: var(--knob-colour);
+	cursor: pointer;
+}
+
+#child-1 {
+    border-right: 1px solid var(--border-colour);
+}
+
+#child-2 {
+    border-left: 1px solid var(--border-colour);
+    border-right: 1px solid var(--border-colour);
+    margin-left: -1px;
+}
+
+#child-3 {
+    border-left: 1px solid var(--border-colour);
+    margin-left: -1px;
+}
+
+.serial {
+    counter-reset: serial-number; /* Set the serial number counter to 0 */
+}
+
+.serial td:first-child:before {
+    counter-increment: serial-number; /* Increment the serial number counter */
+    content: counter(serial-number); /* Display the counter */
+}
+
+div.imageSelect, div.helpGuide {
+	height: auto;
+	width: auto;
+	margin: 10px;
+}
+
+div.helpGuide {
+	width: 30%;
+	margin: 20px auto;
+}
+
+img.tbn-img {
+	width: 200px;
+	margin: 10px auto;
+}
+
+img.tbn-helpimg {
+	display: inline;
+	vertical-align: middle;
+	width: 50px;
+	margin: 10px auto;
+}
+
+p.tbn-p, span.tbn-span {
+	line-height: 0;
+	padding: 0;
+}
+
+span.tbn-span {
+	margin-left: 10px;
+}

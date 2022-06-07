@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title>Op Art Generator and Animator</title>
+		<link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+	</head>
+	<body>
+		<h1>Welcome to Op Art Generator and Animator</h1>
+		<br>
+		<div class="container" style="display: flex;">
+        	<div style="width: 50%;">
+            	<img src="{{ url_for('static', filename=graph) }}" width="90%" />
+            	<p>Blaze<p>
+        	</div>
+        	<div style="flex-grow: 1;">
+        		<form action="home" method="post">
+					<input type="submit" value="Back to Image Selector" id="home" class="button">
+				</form>
+				<br>
+            	<form action="output" method="post" id="outputForm">
+					<span>Shape Alpha(%)</span>
+					<input type="range" id="shapeAlpha" name="shapeAlpha_input" min="0" max="100" step="1" value="{{ initShapeAlpha }}" class="slider">
+					<input type="number" id="shapeAlphaValue" name="shapeAlpha_input_textbox" min="0" max="100" step="1" value="{{ initShapeAlpha }}" required>
+					<br>
+					<span>Mode</span>
+					<select name="mode_input" id="mode">
+  						<option value="png" {% if mode == "png"%} selected {% endif %}>PNG</option>
+  						<option value="svg" {% if mode == "svg"%} selected {% endif %}>SVG</option>
+					</select>
+					<br>
+					<br>
+					<span>Angle</span>
+					<input type="range" id="angle" name="angle_input" min="1" max="89" step="1" value="{{ initAngle }}" class="slider">
+					<input type="number" id="angleValue" name="angle_input_textbox" min="0" max="89" step="1" value="{{ initAngle }}" required>
+					<br>
+					<br>
+					<div class="container" style="display: flex;">
+						<div style="width: 30%;" id="child-1">
+							<span class="right">Circle Radius</span>
+							<table id="circleRadiusTable" class="center table serial">
+								<tr>
+									<th>Row</th>
+									<th>R</th>
+								</tr>
+								{% for r in initCircleRadius %}
+								<tr>
+									<td></td>
+  									<td><input name="circleRadius_input" type='number' min="1" max="9999" step="1" required value="{{ r }}"></td>
+  								</tr>
+  								{% endfor %}
+							</table>
+						</div>
+						<div style="width: 40%;" id="child-2">
+							<span>Circle Centres</span>
+							<table id="circleCentreTable" class="center table">
+								<tr>
+									<th>X</th>
+									<th>Y</th>
+								</tr>
+								{% for c in initCircleCentre %}
+								<tr>
+  									<td><input name="circleCentreX_input" type='number' min="0" max="9999" step="1" required value="{{ c[0] }}"></td>
+  									<td><input name="circleCentreY_input" type='number' min="0" max="9999" step="1" required value="{{ c[1] }}"></td>
+  								</tr>
+  								{% endfor %}
+							</table>
+						</div>
+						<div style="width: 30%;" id="child-3">
+							<span>Angle Offset</span>
+							<table id="angleOffsetTable" class="center table">
+								<tr>
+									<th>&Theta;</th>
+								</tr>
+								{% for a in initAngleOffset %}
+								<tr>
+  									<td><input name="angleOffset_input" type='number' min="0" max="360" step="1" required value="{{ a }}"></td>
+  									<!-- <td><input type="button" value="Delete" onclick="deleteRow(this)" class="button"></td> -->
+  									<td><button onclick="deleteRow(this)" id="createMyTableRow">Delete</button></td>
+  								</tr>
+  								{% endfor %}
+							</table>
+						</div>
+					</div>
+					<br>
+					<button onclick="createRow(document.getElementById('insertNum').value)" id="createMyTableRow">Insert</button>
+					<span> after Row </span>
+					<input id="insertNum" name="insertNum_input" type='number' min="0" max="10" step="1" required value="{{ initInsertNum }}">
+					<br>
+					<br>
+					<span>Colour Pattern</span>
+					<br>
+					<span>The colour pattern is set to 'check' by default.</span>
+					<br>
+					<br> 
+					<input type="submit" value="Generate" class="button">
+				</form>
+        	</div>
+    	</div>
+    	<script type="text/javascript">
+    		var outputForm = document.getElementById("outputForm");
+    		var inputs = outputForm.getElementsByTagName("input");
+    		var selects = outputForm.getElementsByTagName("select");
+
+    		function checkValidThenSubmit(){
+    			if (outputForm.checkValidity()) {
+					outputForm.submit();
+				} else {
+					outputForm.reportValidity();
+				}
+    		}
+
+			for (let i = 0; i < inputs.length; i++) {
+				inputs[i].onchange = function() {
+					if (this.name == "insertNum_input") return;
+					checkValidThenSubmit();
+				}
+			}
+
+			for (let i = 0; i < selects.length; i++) {
+				selects[i].onchange = function() {
+					checkValidThenSubmit();
+				}
+			}
+
+    		var shapeAlphaSlider = document.getElementById("shapeAlpha");
+			var shapeAlphaValue = document.getElementById("shapeAlphaValue");
+			shapeAlphaValue.value = shapeAlphaSlider.value; // Display the default slider value
+
+			// Update the current slider value (each time you drag the slider handle)
+			shapeAlphaSlider.oninput = function() {
+  				shapeAlphaValue.value = this.value;
+			}
+
+			// Overrides for loop on top
+			shapeAlphaValue.onchange = function() {
+            	shapeAlphaSlider.value = this.value;
+            	checkValidThenSubmit();
+            }
+
+			var angleSlider = document.getElementById("angle");
+			var angleValue = document.getElementById("angleValue");
+			angleValue.value = angleSlider.value; // Display the default slider value
+
+			// Update the current slider value (each time you drag the slider handle)
+			angleSlider.oninput = function() {
+  				angleValue.value = this.value;
+            }
+
+            // Overrides for loop on top
+            angleValue.onchange = function() {
+            	angleSlider.value = this.value;
+            	checkValidThenSubmit();
+            }
+
+            function createRow(r) {
+            	// Create a row for all 3 tables respectively.
+				var circleRadiusTable = document.getElementById("circleRadiusTable");
+				var circleCentreTable = document.getElementById("circleCentreTable");
+				var angleOffsetTable = document.getElementById("angleOffsetTable");
+				// Insert at specific row.
+            	var insertNum = document.getElementById("insertNum");
+            	if (parseInt(r) >= circleRadiusTable.rows.length) {
+            		alert("Exceeds current max row, added a row at the end instead.");
+            		var rowNum = circleRadiusTable.rows.length;
+            	} else {
+            		var rowNum = parseInt(r) + 1;
+            	}
+				// Max line 10. (Include header)
+				if (circleRadiusTable.rows.length >= 11) {
+					alert("Support up to 10 rows.");
+					return;
+				}
+				if (r != 0) {
+					// Get the value above the inserted row to duplicate the new one.
+					var prevCircleRadius = circleRadiusTable.getElementsByTagName("input")[rowNum-2].value;
+					var prevCircleCentreX = circleCentreTable.getElementsByTagName("input")[2*rowNum-4].value;
+					var prevCircleCentreY = circleCentreTable.getElementsByTagName("input")[2*rowNum-3].value;
+					var prevAngleOffset = angleOffsetTable.getElementsByTagName("input")[rowNum-2].value;
+				} else {
+					// Default value if inserted at the beginning.
+					var prevCircleRadius = 1;
+					var prevCircleCentreX = 0;
+					var prevCircleCentreY = 0;
+					var prevAngleOffset = 0;
+				}
+				
+
+				var circleRadiusTableRow = circleRadiusTable.insertRow(rowNum);
+				var cellRow = circleRadiusTableRow.insertCell(0);
+				var cellR = circleRadiusTableRow.insertCell(1);
+				var circleCentreTableRow = circleCentreTable.insertRow(rowNum);
+				var cellX = circleCentreTableRow.insertCell(0);
+				var cellY = circleCentreTableRow.insertCell(1);
+				var angleOffsetTableRow = angleOffsetTable.insertRow(rowNum);
+				var cellA = angleOffsetTableRow.insertCell(0);
+				var cellDelete = angleOffsetTableRow.insertCell(1);
+				
+				cellRow.innerHTML = "<td></td>";
+				cellR.innerHTML = "<input name='circleRadius_input' type='number' min='1' max='9999' required value='" + prevCircleRadius + "' onchange='checkValidThenSubmit()'>";
+				cellX.innerHTML = "<input name='circleCentreX_input' type='number' min='0' max='9999' required value='" + prevCircleCentreX + "' onchange='checkValidThenSubmit()'>";
+				cellY.innerHTML = "<input name='circleCentreY_input' type='number' min='0' max='9999' required value='" + prevCircleCentreY + "' onchange='checkValidThenSubmit()'>";
+				cellA.innerHTML = "<input name='angleOffset_input' type='number' min='0' max='360' required value='" + prevAngleOffset + "' onchange='checkValidThenSubmit()'>";
+				cellDelete.innerHTML = '<button onclick="deleteRow(this)" id="createMyTableRow">Delete</button>';
+
+				insertNum.value = circleRadiusTable.rows.length - 1
+			}
+
+			function deleteRow(r) {
+				var i = r.parentNode.parentNode.rowIndex;
+				if (circleRadiusTable.rows.length == 2) {
+					alert("This is the last row!");
+					return;
+				}
+				document.getElementById("circleRadiusTable").deleteRow(i);
+				document.getElementById("circleCentreTable").deleteRow(i);
+				document.getElementById("angleOffsetTable").deleteRow(i);
+				insertNum.value = circleRadiusTable.rows.length - 1
+				checkValidThenSubmit();
+			}
+
+			// function showDivs(element) {
+			// 	randomDiv = document.getElementById("colourPatternDiv_random");
+			// 	switch (element.value) {
+			// 		case "random":
+			// 			randomDiv.style.display = 'block';
+			// 			break;
+			// 		case "check":
+			// 			randomDiv.style.display = 'none';
+			// 			break;
+			// 		default:
+			// 			randomDiv.style.display = 'none';
+			// 	}
+			// }
+    	</script>
+	</body>
+</html>

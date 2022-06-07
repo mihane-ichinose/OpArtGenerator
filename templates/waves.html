@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title>Op Art Generator and Animator</title>
+		<link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+	</head>
+	<body>
+		<h1>Welcome to Op Art Generator and Animator</h1>
+		<br>
+		<div class="container" style="display: flex;">
+        	<div style="width: 50%;">
+            	<img src="{{ url_for('static', filename=graph) }}" width="90%" />
+            	<p>Waves<p>
+        	</div>
+        	<div style="flex-grow: 1;">
+        		<form action="home" method="post">
+					<input type="submit" value="Back to Image Selector" id="home" class="button">
+				</form>
+				<br>
+            	<form action="output" method="post" id="outputForm">
+					<span>Shape Alpha(%)</span>
+					<input type="range" id="shapeAlpha" name="shapeAlpha_input" min="0" max="100" step="1" value="{{ initShapeAlpha }}" class="slider">
+					<input type="number" id="shapeAlphaValue" name="shapeAlpha_input_textbox" min="0" max="100" step="1" value="{{ initShapeAlpha }}" required>
+					<br>
+					<span>Mode</span>
+					<select name="mode_input" id="mode">
+  						<option value="png" {% if mode == "png"%} selected {% endif %}>PNG</option>
+  						<option value="svg" {% if mode == "svg"%} selected {% endif %}>SVG</option>
+					</select>
+					<br>
+					<br>
+					<span>Image Width</span>
+					<input type="number" id="width" name="width_input" min="1" max="1000" step="1" value="{{ initWidth }}" required>
+					<br>
+					<br>
+					<span>Amplitude</span>
+					<input type="number" id="amplitude" name="amplitude_input" min="0.1" max="10" step="0.1" value="{{ initAmplitude }}" required>
+					<br>
+					<span>Period</span>
+					<input type="number" id="period" name="period_input" min="0.01" max="10" step="0.01" value="{{ initPeriod }}" required>
+					<br>
+					<span>Vertical Offset</span>
+					<input type="number" id="verticalOffset" name="verticalOffset_input" required min="1" max="100" step="1" value="{{ initVerticalOffset }}" required>
+					<br>
+					<span>Horizontal Offset</span>
+					<input type="number" id="horizontalOffset" name="horizontalOffset_input" required min="-100" max="100" step="1" value="{{ initHorizontalOffset }}" required>
+					<br>
+					<span>Accuracy</span>
+					<input type="number" id="accuracy" name="accuracy_input" required min="0.01" max="10" step="0.01" value="{{ initAccuracy }}" required>
+					<br>
+					<br>
+					<span>Gradient Delta</span>
+					<input type="range" id="gradientDelta" name="gradientDelta_input" min="0" max="100" step="1" value="{{ initGradientDelta }}" class="slider">
+					<input type="number" id="gradientDeltaValue" name="gradientDelta_input_textbox" min="0" max="100" step="1" value="{{ initGradientDelta }}" required>
+					<br>
+					<span>Gradient Colour</span>
+					<div>
+						<input type="checkbox" id="isRedGradient" name="isRedGradient_input"
+						{% if isRedGradient %} checked {% endif %}>
+						<label for="isRedGradient" class="checkBoxLabel">Red</label>
+						<input type="checkbox" id="isGreenGradient" name="isGreenGradient_input"
+						{% if isGreenGradient %} checked {% endif %}>
+						<label for="isGreenGradient" class="checkBoxLabel">Green</label>
+						<input type="checkbox" id="isBlueGradient" name="isBlueGradient_input"
+						{% if isBlueGradient %} checked {% endif %}>
+						<label for="isBlueGradient" class="checkBoxLabel">Blue</label>
+					</div>
+					<span>Take top-left corner as (0,0), right and down as positive &#x1d499; and &#x1d432; respectively.</span>
+					<br>
+					<br>
+					<div class="container" style="display: flex;">
+						<div style="width: 50%;" id="child-1">
+							<span>Formula for the top curve</span>
+							<h2>{{formulaTopMsg.decode('utf-8')}}</h2>
+						</div>
+						<div style="flex-grow: 1;" id="child-3">
+							<span>Formula for the bottom curve</span>
+							<h2>{{formulaBottomMsg.decode('utf-8')}}</h2>
+						</div>
+					</div>
+					<br>
+					<input type="submit" value="Generate" class="button">
+				</form>
+        	</div>
+    	</div>
+    	<script type="text/javascript">
+    		var outputForm = document.getElementById("outputForm");
+    		var inputs = outputForm.getElementsByTagName("input");
+    		var selects = outputForm.getElementsByTagName("select");
+
+			function checkValidThenSubmit(){
+    			if (outputForm.checkValidity()) {
+					outputForm.submit();
+				} else {
+					outputForm.reportValidity();
+				}
+    		}
+
+			for (let i = 0; i < inputs.length; i++) {
+				inputs[i].onchange = function() {
+					checkValidThenSubmit();
+				}
+			}
+
+			for (let i = 0; i < selects.length; i++) {
+				selects[i].onchange = function() {
+					checkValidThenSubmit();
+				}
+			}
+
+    		var shapeAlphaSlider = document.getElementById("shapeAlpha");
+			var shapeAlphaValue = document.getElementById("shapeAlphaValue");
+			shapeAlphaValue.value = shapeAlphaSlider.value; // Display the default slider value
+
+			// Update the current slider value (each time you drag the slider handle)
+			shapeAlphaSlider.oninput = function() {
+  				shapeAlphaValue.value = this.value;
+			}
+
+			// Overrides for loop on top
+			shapeAlphaValue.onchange = function() {
+            	shapeAlphaSlider.value = this.value;
+            	checkValidThenSubmit();
+            }
+
+            var gradientDeltaSlider = document.getElementById("gradientDelta");
+			var gradientDeltaValue = document.getElementById("gradientDeltaValue");
+			gradientDeltaValue.value = gradientDeltaSlider.value; // Display the default slider value
+
+			// Update the current slider value (each time you drag the slider handle)
+			gradientDeltaSlider.oninput = function() {
+  				gradientDeltaValue.value = this.value;
+			}
+
+			// Overrides for loop on top
+			gradientDeltaValue.onchange = function() {
+            	gradientDeltaSlider.value = this.value;
+            	checkValidThenSubmit();
+            }
+    	</script>
+	</body>
+</html>

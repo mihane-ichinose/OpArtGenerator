@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title>Op Art Generator and Animator</title>
+		<link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+	</head>
+	<body>
+		<h1>Welcome to Op Art Generator and Animator</h1>
+		<br>
+		<div class="container" style="display: flex;">
+        	<div style="width: 50%;">
+            	<img src="{{ url_for('static', filename=graph) }}" width="90%" />
+            	<div class="container">
+	            	<div class="helpGuide" onclick="selectType(this)" image-type="help">
+						<img src="static/img/help.png" class="tbn-helpimg">
+						<span class="tbn-span">Help Guide</span>
+					</div>
+				</div>
+        	</div>
+        	<div style="flex-grow: 1;">
+            	<!-- <form action="selectType" method="post">
+            		<select name="imageType" id="image">
+  						<option value="parallelogram">Parallelogram</option>
+  						<option value="blaze">Blaze</option>
+  						<option value="doublequad">Double Quadratic</option>
+  						<option value="kiss">Kiss</option>
+  						<option value="waves">Waves</option>
+  						<option value="stripes">Stripes</option>
+					</select>
+					<input type="submit" value="Select" class="button">
+				</form>
+				<br> -->
+				<div class="container" style="display: flex;">
+					<div class="imageSelect" onclick="selectType(this)" image-type="parallelogram" style="width: 40%;">
+						<img src="static/img/parallelogram.jpg" class="tbn-img">
+						<p class="tbn-p">Parallelogram</p>
+					</div>
+					<div class="imageSelect" onclick="selectType(this)" image-type="blaze" style="flex-grow: 1;">
+						<img src="static/img/blaze.jpg" class="tbn-img">
+						<p class="tbn-p">Blaze</p>
+					</div>
+				</div>
+				<div class="container" style="display: flex;">
+					<div class="imageSelect" onclick="selectType(this)" image-type="doublequad" style="width: 60%;">
+						<img src="static/img/doublequad.jpg" class="tbn-img">
+						<p class="tbn-p">Double Quadratic</p>
+					</div>
+					<div class="imageSelect" onclick="selectType(this)" image-type="kiss" style="flex-grow: 1;">
+						<img src="static/img/kiss.jpg" class="tbn-img">
+						<p class="tbn-p">Kiss</p>
+					</div>
+				</div>
+					<div class="container" style="display: flex;">
+					<div class="imageSelect" onclick="selectType(this)" image-type="waves" style="width: 40%;">
+						<img src="static/img/waves.jpg" class="tbn-img">
+						<p class="tbn-p">Waves</p>
+					</div>
+					<div class="imageSelect" onclick="selectType(this)" image-type="stripes" style="flex-grow: 1;">
+						<img src="static/img/stripes.jpg" class="tbn-img">
+						<p class="tbn-p">Stripes</p>
+					</div>
+				</div>
+				<!-- <form action="home" method="post">
+					<input type="submit" value="Help Guide" id="home" class="button">
+				</form> -->
+        	</div>
+    	</div>
+    	<script type="text/javascript">
+    		function selectType(element) {
+    			imageType = element.getAttribute("image-type");
+    			window.location.href='{{ url_for("selectType")}}'+'?imageType='+imageType;
+    		}
+    	</script>
+	</body>
+</html>
