@@ -1,7 +1,8 @@
 # The universal library of Op Art Generator and Animator
 # Now contains: Double quadratic, blaze study, parallelogram, kiss, waves and stripes.
 
-import cairo, random, math
+import random, math
+import cairocffi as cairo
 from scipy.stats import binom
 from flask import Flask, render_template, request
 
