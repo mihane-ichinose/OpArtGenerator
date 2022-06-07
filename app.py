@@ -640,10 +640,10 @@ def output():
                                         index += 1
                                         if index >= num: break
                                 else:
-                                    if(ws2[index-valley-1] >= 0):
-                                        printDoubleQuad(h, v*round(maxwidth**offset) - prev_o, round(maxwidth**offset), ws2[index-valley-1], angle, cr, shape)
-                                        h += ws2[index-valley-1]
-                                        prev_o += math.tan(angle * math.pi / 180) * ws2[index-valley-1]
+                                    if(ws2[index-valley] >= 0):
+                                        printDoubleQuad(h, v*round(maxwidth**offset) - prev_o, round(maxwidth**offset), ws2[index-valley], angle, cr, shape)
+                                        h += ws2[index-valley]
+                                        prev_o += math.tan(angle * math.pi / 180) * ws2[index-valley]
                                         index += 1
                                         if index >= num: break
                                 # Set no offset for squares and dots
@@ -657,10 +657,10 @@ def output():
                                         index += 1
                                         if index >= num: break
                                 else:
-                                    if(ws2[index-valley-1] >= 0):
-                                        printDoubleQuad(h, v*round(maxwidth**offset) - prev_o, round(maxwidth**offset), ws2[index-valley-1], angle, cr, shape)
-                                        h += ws2[index-valley-1]
-                                        prev_o += math.tan(angle * math.pi / 180) * ws2[index-valley-1]
+                                    if(ws2[index-valley] >= 0):
+                                        printDoubleQuad(h, v*round(maxwidth**offset) - prev_o, round(maxwidth**offset), ws2[index-valley], angle, cr, shape)
+                                        h += ws2[index-valley]
+                                        prev_o += math.tan(angle * math.pi / 180) * ws2[index-valley]
                                         index += 1
                                         if index >= num: break
                         else:
@@ -676,10 +676,10 @@ def output():
                                         index += 1
                                         if index >= num: break
                                 else:
-                                    if(ws2[index-valley-1] >= 0):
-                                        printDoubleQuad(h, v*round(maxwidth**offset) - prev_o, round(maxwidth**offset), ws2[index-valley-1], angle, cr, shape)
-                                        h += ws2[index-valley-1]
-                                        prev_o += math.tan(angle * math.pi / 180) * ws2[index-valley-1]
+                                    if(ws2[index-valley] >= 0):
+                                        printDoubleQuad(h, v*round(maxwidth**offset) - prev_o, round(maxwidth**offset), ws2[index-valley], angle, cr, shape)
+                                        h += ws2[index-valley]
+                                        prev_o += math.tan(angle * math.pi / 180) * ws2[index-valley]
                                         index += 1
                                         if index >= num: break
                     else:
@@ -694,10 +694,10 @@ def output():
                                 index += 1
                                 if index >= num: break
                         else:
-                            if(ws2[index-valley-1] >= 0):
-                                printDoubleQuad(h, v*round(maxwidth**offset) - prev_o, round(maxwidth**offset), ws2[index-valley-1], angle, cr, shape)
-                                h += ws2[index-valley-1]
-                                prev_o += math.tan(angle * math.pi / 180) * ws2[index-valley-1]
+                            if(ws2[index-valley] >= 0):
+                                printDoubleQuad(h, v*round(maxwidth**offset) - prev_o, round(maxwidth**offset), ws2[index-valley], angle, cr, shape)
+                                h += ws2[index-valley]
+                                prev_o += math.tan(angle * math.pi / 180) * ws2[index-valley]
                                 index += 1
                                 if index >= num: break
                 if (colourpattern == "check" or colourpattern == "gradient"):
