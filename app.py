@@ -2,7 +2,7 @@
 # Now contains: Double quadratic, blaze study, parallelogram, kiss, waves and stripes.
 
 import random, math
-import cairo
+import cairocffi as cairo
 from scipy.stats import binom
 from flask import Flask, render_template, request
 
