@@ -2,7 +2,7 @@
 # Now contains: Double quadratic, blaze study, parallelogram, kiss, waves and stripes.
 
 import random, math
-import cairocffi as cairo
+import cairo
 from scipy.stats import binom
 from flask import Flask, render_template, request
 
@@ -1036,6 +1036,10 @@ def printStripes(h, height, stripew, orientation, cr):
     for i in range(len(shapeList)):
         cr.line_to(shapeList[i][0], shapeList[i][1])
     cr.fill()
+
+@app.route('/fullScreen', methods = ['POST', 'GET'])
+def fullScreen():
+    return render_template("fullscreen.html")
 
 if __name__ == "__main__":
     app.run(port="5000", host="0.0.0.0")

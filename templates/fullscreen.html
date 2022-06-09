@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title>Op Art Generator and Animator</title>
+		<link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+	</head>
+	<body>
+		<img src="../static/out/output.png" class="full">
+		<br>
+		<button onclick="detail()">Detail</button>
+		<button onclick="history.back()">Back</button>
+		<script type="text/javascript">
+			function detail() {
+				// toggle background, size problem
+				// document.body.classList.toggle('bg');
+				window.open('../static/out/output.png')
+			}
+		</script>
+	</body>
+</html>

@@ -17,7 +17,7 @@
 	text-align: center;
 }
 
-html, body {
+html, body:not(.bg) {
 	background: var(--background-colour);
 	height: 90%;
 	width: 90%;
@@ -205,6 +205,13 @@ img.tbn-helpimg {
 	margin: 10px auto;
 }
 
+img.full {
+	display: block;
+	margin-left: auto;
+	margin-right: auto;
+	height: 800px;
+}
+
 p.tbn-p, span.tbn-span {
 	line-height: 0;
 	padding: 0;
@@ -213,3 +220,12 @@ p.tbn-p, span.tbn-span {
 span.tbn-span {
 	margin-left: 10px;
 }
+
+/*.bg{
+	background-image: url('../../static/out/output.png');
+    background-size: 100%;
+    height: auto;
+    width: auto;
+    background-repeat: no-repeat;  
+    background-attachment: fixed;
+}*/

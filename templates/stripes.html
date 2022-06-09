@@ -10,7 +10,7 @@
 		<br>
 		<div class="container" style="display: flex;">
         	<div style="width: 50%;">
-            	<img src="{{ url_for('static', filename=graph) }}" width="90%" />
+            	<img src="{{ url_for('static', filename=graph) }}" width="90%" onclick="showImg()" class="output" />
             	<p>Stripes<p>
         	</div>
         	<div style="flex-grow: 1;">
@@ -184,6 +184,17 @@
 						binoquadDiv.style.display = 'none';
 						binomialDiv.style.display = 'none';
 						quadraticDiv.style.display = 'none';
+				}
+			}
+
+			var imgSrc = "{{ url_for('static', filename=graph) }}"
+			if (imgSrc == "/static/out/output.png") {
+				document.querySelector("img.output").style.cursor = "pointer";
+			}
+
+			function showImg() {
+				if (imgSrc == "/static/out/output.png") {
+					window.location.href='{{ url_for("fullScreen") }}';
 				}
 			}
     	</script>
