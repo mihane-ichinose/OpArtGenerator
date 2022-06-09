@@ -608,12 +608,10 @@ def output():
                     else: # The index of the shape with gradient colours rather than black
                         gradient_index = (index-1)//2 - v//2 - gradientpoint
                         step = 1 / gradientwidth
-                        print(gradient_index)
                         if (gradient_index > -gradientwidth and gradient_index <= 0): # Gradient to white
                             colour = (gradientdelta * (gradientwidth+gradient_index) * step,
                                 gradientdelta * (gradientwidth+gradient_index) * step,
                                 gradientdelta * (gradientwidth+gradient_index) * step)
-                            print(colour)
                         elif (gradient_index > 0 and gradient_index < gradientwidth): # Gradient to black
                             colour = (gradientdelta * (gradientwidth-gradient_index) * step,
                                 gradientdelta * (gradientwidth-gradient_index) * step,
