@@ -258,9 +258,9 @@ def selectType():
         shape="square",
         initAngle=30,
         colourPattern="check",
-        initGradientPoint=-9,
-        initGradientWidth=9,
-        initGradientDelta=80,
+        initGradientPoint=3,
+        initGradientWidth=5,
+        initGradientDelta=90,
         initAdjacentProbability=10,
         initAdjacentNums="4 5",
         initZebraNums="2 3",
@@ -420,7 +420,7 @@ def output():
     if image == "doublequad":
         gradientpoint = request.form.get('gradientPoint_input', type=int)
         gradientwidth = request.form.get('gradientWidth_input', type=int)
-        gradientdelta = request.form.get('gradientDelta_input', type=int)/1000
+        gradientdelta = request.form.get('gradientDelta_input', type=int)/100
     # Required when colour pattern set to 'random'
     if image == "doublequad" or image == "parallelogram":
         adjacentprobability = request.form.get('adjacentProbability_input', type=int)/100
@@ -606,15 +606,18 @@ def output():
                     if ((index+v) % 2 == 0):
                         colour = colours[0] # White for even index+v
                     else: # The index of the shape with gradient colours rather than black
-                        gradient_index = index - v - gradientpoint
-                        if (gradient_index >= 1 and gradient_index < gradientwidth+2): # Gradient to white
-                            colour = (gradientdelta * gradient_index,
-                                gradientdelta * gradient_index,
-                                gradientdelta * gradient_index)
-                        elif (gradient_index >= gradientwidth+2 and gradient_index < 2*gradientwidth): # Gradient to black
-                            colour = (gradientdelta * (2*gradientwidth-gradient_index),
-                                gradientdelta * (2*gradientwidth-gradient_index),
-                                gradientdelta * (2*gradientwidth-gradient_index))
+                        gradient_index = (index-1)//2 - v//2 - gradientpoint
+                        step = 1 / gradientwidth
+                        print(gradient_index)
+                        if (gradient_index > -gradientwidth and gradient_index <= 0): # Gradient to white
+                            colour = (gradientdelta * (gradientwidth+gradient_index) * step,
+                                gradientdelta * (gradientwidth+gradient_index) * step,
+                                gradientdelta * (gradientwidth+gradient_index) * step)
+                            print(colour)
+                        elif (gradient_index > 0 and gradient_index < gradientwidth): # Gradient to black
+                            colour = (gradientdelta * (gradientwidth-gradient_index) * step,
+                                gradientdelta * (gradientwidth-gradient_index) * step,
+                                gradientdelta * (gradientwidth-gradient_index) * step)
                         else:
                             colour = colours[1] # Black for odd index+v
                     cr.set_source_rgba(colour[0], colour[1], colour[2], shapealpha)
