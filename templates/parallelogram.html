@@ -11,7 +11,7 @@
 		<br>
 		<div class="container" style="display: flex;">
         	<div style="width: 50%;">
-            	<img src="{{ url_for('static', filename=graph) }}" width="90%" onclick="showImg()" class="output" />
+            	<img name="parallelogram" src="{{ url_for('static', filename=graph) }}" width="90%" onclick="showImg(this)" class="output" />
             	<p>Parallelogram<p>
         	</div>
         	<div style="flex-grow: 1;">
@@ -160,7 +160,7 @@
 				document.querySelector("img.output").style.cursor = "pointer";
 			}
 
-			function showImg() {
+			function showImg(element) {
 				if (imgSrc == "/static/out/output.png") {
 					window.location.href='{{ url_for("fullScreen") }}';
 				}

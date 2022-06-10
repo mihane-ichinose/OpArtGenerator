@@ -2,6 +2,7 @@
 # Now contains: Double quadratic, blaze study, parallelogram, kiss, waves and stripes.
 
 import random, math
+# Use CFFI version - cairocffi instead of normal PyCairo library for heroku deployment.
 import cairocffi as cairo
 from scipy.stats import binom
 from flask import Flask, render_template, request
@@ -228,7 +229,7 @@ def selectType():
     if imageType == 'parallelogram':
         return render_template("parallelogram.html",
         initShapeAlpha=initShapeAlpha,
-        initAngle=30,
+        initAngle=45,
         initStripes=20,
         initHeight=400,
         initSide=20,
@@ -1039,7 +1040,7 @@ def printStripes(h, height, stripew, orientation, cr):
 
 @app.route('/fullScreen', methods = ['POST', 'GET'])
 def fullScreen():
-    return render_template("fullscreen.html")
+    return render_template("fullscreen.html", imageType=imageType)
 
 if __name__ == "__main__":
     app.run(port="5000", host="0.0.0.0")

@@ -7,11 +7,46 @@
 		<link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
 	</head>
 	<body>
-		<img src="../static/out/output.png" class="full">
-		<br>
-		<button onclick="detail()">Detail</button>
-		<button onclick="history.back()">Back</button>
+		<div class="container">
+			<div style="width: 50%; float: left">
+				<img src="../static/out/output.png" class="full">
+				<br>
+				<button onclick="detail()">Detail</button>
+				<button onclick="history.back()">Back</button>
+			</div>
+			<div style="width: 50%; float: right">
+				<img src="../static/img/{{ imageType }}.jpg" class="full">
+				<p id="intro"></p>
+			</div>
+		</div>
+		
+		
 		<script type="text/javascript">
+			imageType = '{{ imageType }}';
+			switch(imageType) {
+				case "parallelogram":
+					document.getElementById("intro").innerHTML = "Nataraja, Bridget Riley, 1993.";
+					break;
+				case "blaze":
+					document.getElementById("intro").innerHTML = "Blaze 1, Bridget Riley, 1962.";
+					break;
+				case "doublequad":
+					document.getElementById("intro").innerHTML = "Movement in Squares, Bridget Riley, 1961.";
+					break;
+				case "kiss":
+					document.getElementById("intro").innerHTML = "Kiss, Bridget Riley, 1961.";
+					break;
+				case "waves":
+					document.getElementById("intro").innerHTML = "Cataract 3, Bridget Riley, 1967.";
+					break;
+				case "stripes":
+					document.getElementById("intro").innerHTML = "RA 2, Bridget Riley, 1981.";
+					break;
+				default:
+					document.getElementById("intro").innerHTML = "undefined";
+					break;
+			}
+
 			function detail() {
 				// toggle background, size problem
 				// document.body.classList.toggle('bg');
