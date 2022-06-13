@@ -9,9 +9,9 @@
 	<body>
 		<div class="container">
 			<div style="width: 50%; float: left">
-				<img src="../static/out/output.png" class="full">
+				<img src="../static/out/output.{{ mode }}" class="full">
 				<br>
-				<a href="../static/out/output.png" download="myOpArt"><button>Download</button></a>
+				<a href="../static/out/output.{{ mode }}" download="myOpArt"><button>Download</button></a>
 				<button onclick="detail()">Detail</button>
 				<button onclick="history.back()">Back</button>
 			</div>
@@ -51,7 +51,7 @@
 			function detail() {
 				// toggle background, size problem
 				// document.body.classList.toggle('bg');
-				window.open('../static/out/output.png')
+				window.open('../static/out/output.{{ mode }}')
 			}
 		</script>
 	</body>

@@ -3,7 +3,7 @@
 
 import random, math
 # Use CFFI version - cairocffi instead of normal PyCairo library for heroku deployment.
-import cairocffi as cairo
+import cairo
 from scipy.stats import binom
 from flask import Flask, render_template, request
 
@@ -12,6 +12,7 @@ app = Flask(__name__)
 float_gen = lambda a, b: random.uniform(a, b)
 
 imageType = 'undefined'
+mode = 'undefined'
 
 # decimal: decimal places for random possibilities between 0 and 1
 def randomP(decimal):
@@ -315,7 +316,7 @@ def selectType():
 
 @app.route('/output', methods = ['POST', 'GET'])
 def output():
-
+    global mode
     # Public arguments here
     shapealpha = request.form.get('shapeAlpha_input', type=int)/100
     mode = request.form['mode_input']
@@ -1040,7 +1041,9 @@ def printStripes(h, height, stripew, orientation, cr):
 
 @app.route('/fullScreen', methods = ['POST', 'GET'])
 def fullScreen():
-    return render_template("fullscreen.html", imageType=imageType)
+    return render_template("fullscreen.html",
+    imageType=imageType,
+    mode=mode)
 
 if __name__ == "__main__":
     app.run(port="5000", host="0.0.0.0")

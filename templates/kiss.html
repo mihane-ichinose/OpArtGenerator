@@ -102,12 +102,12 @@
             }
 
             var imgSrc = "{{ url_for('static', filename=graph) }}"
-			if (imgSrc == "/static/out/output.png") {
+			if (imgSrc == "/static/out/output.png" || imgSrc == "/static/out/output.svg") {
 				document.querySelector("img.output").style.cursor = "pointer";
 			}
 
 			function showImg() {
-				if (imgSrc == "/static/out/output.png") {
+				if (imgSrc == "/static/out/output.png" || imgSrc == "/static/out/output.svg") {
 					window.location.href='{{ url_for("fullScreen") }}';
 				}
 			}
