@@ -3,7 +3,7 @@
 
 import random, math
 # Use CFFI version - cairocffi instead of normal PyCairo library for heroku deployment.
-import cairo
+import cairocffi as cairo
 from scipy.stats import binom
 from flask import Flask, render_template, request
 
