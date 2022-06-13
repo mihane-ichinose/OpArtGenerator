@@ -129,18 +129,18 @@ def kiss(height, base, kisspoint, curve, distance, accuracy):
     # Add points on the quadratic function
     x = 0
     # List of points for blank shape
-    bs = []
+    kiss = []
     # Add top curve
     while x <= w:
         y = a*((x-h)**2)+k
-        bs.append((x, y))
+        kiss.append((x, y))
         x += accuracy
     # Add bottom horizontal line
-    bs.append((w, base))
-    bs.append((0, base))
-    bs.append((0, a*(h**2)+k)) # x = 0 in quadratic function
+    kiss.append((w, base))
+    kiss.append((0, base))
+    kiss.append((0, a*(h**2)+k)) # x = 0 in quadratic function
 
-    return bs
+    return kiss
 
 # x_orig: starting point, top left
 def waves(x_orig, amplitude, period, verticaloffset, horizontaloffset, width, accuracy):

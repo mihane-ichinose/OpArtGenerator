@@ -207,7 +207,7 @@ img.tbn-helpimg {
 
 img.full {
 	display: block;
-	margin: 10px;
+	margin: 10px auto;
 	width: 750px;
 }
 
