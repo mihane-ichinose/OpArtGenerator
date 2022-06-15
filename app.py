@@ -879,13 +879,16 @@ def output():
     elif image == "waves":
         if horizontaloffset > 0:
             # (x+h)
-            hStr = "(\U0001D499+" + str(horizontaloffset) + ")"
+            hTStr = "(\U0001D499+" + str(horizontaloffset) + ")"
+            hBStr = "(\U0001D499+" + str(2*horizontaloffset) + ")"
         elif horizontaloffset == 0:
             # x
-            hStr = "\U0001D499"
+            hTStr = "\U0001D499"
+            hBStr = "\U0001D499"
         else:
             # (x-h)
-            hStr = "(\U0001D499" + str(horizontaloffset) + ")"
+            hTStr = "(\U0001D499" + str(horizontaloffset) + ")"
+            hBStr = "(\U0001D499" + str(2*horizontaloffset) + ")"
     elif image == "stripes":
         initAdjacentProbability = int(adjacentprobability * 100)
         initAdjacentNums = request.form['adjacentNums_input']
@@ -963,8 +966,8 @@ def output():
         isRedGradient=isredgradient,
         isGreenGradient=isgreengradient,
         isBlueGradient=isbluegradient,
-        formulaTopMsg=("\U0001D432="+str(amplitude)+"sin("+str(period)+hStr+")+"+str(verticaloffset)).encode('utf-8'),
-        formulaBottomMsg=("\U0001D432="+str(amplitude)+"sin("+str(period)+hStr+")+"+str(2*verticaloffset+2)).encode('utf-8'),
+        formulaTopMsg=("\U0001D432="+str(amplitude)+"sin("+str(period)+hTStr+")+"+str(verticaloffset)).encode('utf-8'),
+        formulaBottomMsg=("\U0001D432="+str(amplitude)+"sin("+str(period)+hBStr+")+"+str(2*verticaloffset+2)).encode('utf-8'),
         graph="out/output."+mode)
     elif imageType == "stripes":
         return render_template("stripes.html",
