@@ -429,7 +429,7 @@ def output():
         ADJACENT = list(map(int, request.form['adjacentNums_input'].split()))
         ZEBRA = list(map(int, request.form['zebraNums_input'].split()))
     if image == "waves":
-        gradientdelta = request.form.get('gradientDelta_input', type=int)/10000
+        gradientdelta = request.form.get('gradientDelta_input', type=int)/100
 
     # Colour adjustments
     colours = []
@@ -788,22 +788,22 @@ def output():
         while (v <= height):
             if (index % 2 == 0):
                 colour = colours[0] # White for even index
+                cr.set_source_rgba(colour[0], colour[1], colour[2], shapealpha)
             else:
-                colour = colours[1] # Black for odd index
-            #cr.set_source_rgba(colour[0], colour[1], colour[2], shapealpha)
-            #colour = colours[2] # Black
-            r = colour[0]
-            g = colour[1]
-            b = colour[2]
-            gradient = (height/2-abs(v-height/2))*gradientdelta
-            # Add colour gradient for r/g/b
-            if isredgradient:
-                r += gradient
-            if isgreengradient:
-                g += gradient
-            if isbluegradient:
-                b += gradient
-            cr.set_source_rgba(r, g, b, shapealpha)
+                colour = colours[1] # Black with gradient for odd index
+                r = colour[0]
+                g = colour[1]
+                b = colour[2]
+                step = 1 / (height/2)
+                gradient = (height/2-abs(v-height/2))*gradientdelta*step
+                # Add colour gradient for r/g/b
+                if isredgradient:
+                    r = gradient
+                if isgreengradient:
+                    g = gradient
+                if isbluegradient:
+                    b = gradient
+                cr.set_source_rgba(r, g, b, shapealpha)
             printWaves(0, amplitude, period, v, h, width, accuracy, cr)
 
             index += 1
