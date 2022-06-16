@@ -289,7 +289,7 @@ def selectType():
         initVerticalOffset=4,
         initHorizontalOffset=-10,
         initAccuracy=0.1,
-        initGradientDelta=30,
+        initGradientDelta=70,
         isRedGradient=True,
         isGreenGradient=False,
         isBlueGradient=False,
