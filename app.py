@@ -3,7 +3,7 @@
 
 import random, math
 # Use CFFI version - cairocffi instead of normal PyCairo library for heroku deployment.
-import cairocffi as cairo
+import cairo
 from scipy.stats import binom
 from flask import Flask, render_template, request
 
@@ -268,6 +268,11 @@ def selectType():
         initZebraNums="2 3",
         formulaLeftMsg="N/A".encode('utf-8'),
         formulaRightMsg="N/A".encode('utf-8'),
+        isAnimator=False,
+        initImgs = 10,
+        initInterval = 0.1,
+        isValley = True,
+        initValleyStep = 1,
         graph="img/home_img.jpg")
     elif imageType == 'kiss':
         return render_template("kiss.html",
@@ -336,6 +341,12 @@ def output():
         # Set to either 'square' or 'dot' for different shape pattern
         shape = request.form['shape_input']
         angle = request.form.get('angle_input', type=int)
+        # Animator part
+        isanimator = request.form.get('isAnimator_input', type=bool)
+        imgs = request.form.get('imgs_input', type=int)
+        interval = request.form.get('interval_input', type=float)
+        isvalley = request.form.get('isValley_input', type=bool)
+        valleystep = request.form.get('valleyStep_input', type=int)
     
     # Blaze study
     if image == "blaze":
@@ -461,234 +472,260 @@ def output():
     else:
         for colourRGB in coloursRGB:
             colours.append([e / 255 for e in colourRGB])
-    
-    # Define size of the image, and its logical behaviour.
-    if image == "doublequad":
-        # Quadratic Function
-        # Case 1: x <= valley point - 1 (l)
-        # h = 0, the graph passes (0, maxwidth) and (l, minwidth)
-        # As ax^2+k passes (l, minwidth), a = (minwidth-k)/l^2 since h = 0
-        # Case 2: x > valley point - 1 (l)
-        # h = width, the graph passes (l, minwidth) and (rects, maxwidth)
-        # As a(x-rects)^2+k passes (l, minwidth), a = (minwidth-k)/(l-rects)^2 since h = rects
-        l = valley - 1
-        k = maxwidth
-
-        data1 = list(range(l+1))
-        data2 = list(range(l+1,num))
-        
-        # Set up lists for two shape widths with quadratic values
-        if l <= 0:
-            l = 0
-            valley = 1
-
-            a1 = 0
-            quadratic1 = [0]
-            ws1 = [0]
-
-            a2 = (minwidth-k) / ((l-num+1)**2)
-            quadratic2 = [a2*((x-num+1)**2) + k for x in data2]
-            ws2 = [math.ceil(q**offset) for q in quadratic2 if q > 0]
-        elif l >= num - 1:
-            l = num - 1
-            valley = num
-
-            a1 = (minwidth-k) / (l**2)
-            quadratic1 = [a1*(x**2) + k for x in data1]
-            ws1 = [math.ceil(q**offset) for q in quadratic1 if q > 0]
-
-            a2 = 0
-            quadratic2 = [0]
-            ws2 = [0]
-        else:
-            a1 = (minwidth-k) / (l**2)
-            quadratic1 = [a1*(x**2) + k for x in data1]
-            ws1 = [math.ceil(q**offset) for q in quadratic1 if q > 0]
-
-            a2 = (minwidth-k) / ((l-num+1)**2)
-            quadratic2 = [a2*((x-num+1)**2) + k for x in data2]
-            ws2 = [math.ceil(q**offset) for q in quadratic2 if q > 0]
-    
-        # Width of the image decided by number of elements
-        width = sum(ws1) + sum(ws2)
-        if shape == "square":
-            height = width
-        elif shape == "dot":
-            height = width + math.ceil(ws1[0]*0.4)
-        elif shape == "parallelogram":
-            height = width
-    elif image == "blaze":
-        width = max(circlecentre[len(circlecentre)-1][0] * 2,
-            circlecentre[len(circlecentre)-1][0] + circleradius[len(circlecentre)-1])
-        height = max(circlecentre[len(circlecentre)-1][1] * 2,
-            circlecentre[len(circlecentre)-1][1] + circleradius[len(circlecentre)-1])
-    elif image == "parallelogram":
-        width = stripew * stripes
-    elif image == "kiss":
-        width = height
-    elif image == "waves":
-        height = width
-    elif image == "stripes":
-        if shape == "normal":
-            # Width of the image decided by number of elements
-            width = stripew * stripes
-            height = width
-        elif shape == "binomial":
-            # Binomial distribution
-            n = stripes
-            p = 0.5 # Symmetrical
-
-            data = list(range(n))
-
-            distribution = [binom.pmf(i, n, p) for i in data]
-
-            # Set up a list for stripe widths with scaled distribution values
-            stripews = []
-            for d in distribution:
-                if d*amplitude <= 1: stripews.append(1)
-                elif d*amplitude > maxwidth: stripews.append(maxwidth)
-                else: stripews.append(round(d*amplitude))
-
-            # Width of the image decided by number of elements
-            width = sum(stripews) + gap*stripes
-            height = width
-        elif shape == "quadratic":
-            # Quadratic Function
-            # We know the graph passes (0, minwidth) and (midpoint, maxwidth)
-            # Here we treat c as minwidth, h as midpoint and k as maxwidth
-            # So as a(x-h)^2+k passes (0,c), a = (c-k)/h^2 since h > 0
-            n = stripes
-            c = minwidth
-            h = (n - 1) / 2 # h = -b/2a
-            k = maxwidth # k = f(h)
-            a = (c - k) / (h ** 2)
-
-            data = list(range(n))
-
-            quadratic = [a*((x-h)**2) + k for x in data]
-
-            # Set up a list for stripe widths with quadratic values
-            stripews = [round(q) for q in quadratic]
-
-            # Width of the image decided by number of elements
-            width = sum(stripews) + gap*stripes
-            height = width
-    # Image output mode
-    if (mode == "png"):
-        ims = cairo.ImageSurface(cairo.FORMAT_ARGB32, width, height)
-        cr = cairo.Context(ims)
-    elif (mode == "svg"):
-        svg = cairo.SVGSurface("static/out/output.svg", width, height)
-        cr = cairo.Context(svg)
-    
-    if (image == "kiss"):
-        # Background, default set to black in kiss
-        cr.set_source_rgb(0, 0, 0)
+    if image != "doublequad":
+        imgs = 0
     else:
-        # Otherwise default set to white
-        cr.set_source_rgb(1, 1, 1)
-    cr.rectangle(0, 0, width, height)
-    cr.fill()
-    
-    # Output logic for each image type
-    if (image == "doublequad"):
-        v = 0
-        while (v*round(maxwidth**offset) < 3*height):
-            h = 0
-            index = 0
-            prev_o = 0
-            while (index < num):
-                if (colourpattern == "check"):
-                    if ((index+v) % 2 == 0):
-                        colour = colours[0] # White for even index+v
-                    else:
-                        colour = colours[1] # Black for odd index+v
-                    cr.set_source_rgba(colour[0], colour[1], colour[2], shapealpha)
-                elif (colourpattern == "gradient"):
-                    if ((index+v) % 2 == 0):
-                        colour = colours[0] # White for even index+v
-                    else: # The index of the shape with gradient colours rather than black
-                        gradient_index = (index-1)//2 - v//2 - gradientpoint
-                        step = 1 / gradientwidth
-                        if (gradient_index > -gradientwidth and gradient_index <= 0): # Gradient to white
-                            colour = (gradientdelta * (gradientwidth+gradient_index) * step,
-                                gradientdelta * (gradientwidth+gradient_index) * step,
-                                gradientdelta * (gradientwidth+gradient_index) * step)
-                        elif (gradient_index > 0 and gradient_index < gradientwidth): # Gradient to black
-                            colour = (gradientdelta * (gradientwidth-gradient_index) * step,
-                                gradientdelta * (gradientwidth-gradient_index) * step,
-                                gradientdelta * (gradientwidth-gradient_index) * step)
+        if not isanimator:
+            imgs = 0
+    for animateIndex in range(0, imgs+1):
+        # Define size of the image, and its logical behaviour.
+        if image == "doublequad":
+            # Quadratic Function
+            # Case 1: x <= valley point - 1 (l)
+            # h = 0, the graph passes (0, maxwidth) and (l, minwidth)
+            # As ax^2+k passes (l, minwidth), a = (minwidth-k)/l^2 since h = 0
+            # Case 2: x > valley point - 1 (l)
+            # h = width, the graph passes (l, minwidth) and (rects, maxwidth)
+            # As a(x-rects)^2+k passes (l, minwidth), a = (minwidth-k)/(l-rects)^2 since h = rects
+            l = valley - 1
+            k = maxwidth
+
+            data1 = list(range(l+1))
+            data2 = list(range(l+1,num))
+            
+            # Set up lists for two shape widths with quadratic values
+            if l <= 0:
+                l = 0
+                valley = 1
+
+                a1 = 0
+                quadratic1 = [0]
+                ws1 = [0]
+
+                a2 = (minwidth-k) / ((l-num+1)**2)
+                quadratic2 = [a2*((x-num+1)**2) + k for x in data2]
+                ws2 = [math.ceil(q**offset) for q in quadratic2 if q > 0]
+            elif l >= num - 1:
+                l = num - 1
+                valley = num
+
+                a1 = (minwidth-k) / (l**2)
+                quadratic1 = [a1*(x**2) + k for x in data1]
+                ws1 = [math.ceil(q**offset) for q in quadratic1 if q > 0]
+
+                a2 = 0
+                quadratic2 = [0]
+                ws2 = [0]
+            else:
+                a1 = (minwidth-k) / (l**2)
+                quadratic1 = [a1*(x**2) + k for x in data1]
+                ws1 = [math.ceil(q**offset) for q in quadratic1 if q > 0]
+
+                a2 = (minwidth-k) / ((l-num+1)**2)
+                quadratic2 = [a2*((x-num+1)**2) + k for x in data2]
+                ws2 = [math.ceil(q**offset) for q in quadratic2 if q > 0]
+        
+            # Width of the image decided by number of elements
+            width = sum(ws1) + sum(ws2)
+            if shape == "square":
+                height = width
+            elif shape == "dot":
+                height = width + math.ceil(ws1[0]*0.4)
+            elif shape == "parallelogram":
+                height = width
+        elif image == "blaze":
+            width = max(circlecentre[len(circlecentre)-1][0] * 2,
+                circlecentre[len(circlecentre)-1][0] + circleradius[len(circlecentre)-1])
+            height = max(circlecentre[len(circlecentre)-1][1] * 2,
+                circlecentre[len(circlecentre)-1][1] + circleradius[len(circlecentre)-1])
+        elif image == "parallelogram":
+            width = stripew * stripes
+        elif image == "kiss":
+            width = height
+        elif image == "waves":
+            height = width
+        elif image == "stripes":
+            if shape == "normal":
+                # Width of the image decided by number of elements
+                width = stripew * stripes
+                height = width
+            elif shape == "binomial":
+                # Binomial distribution
+                n = stripes
+                p = 0.5 # Symmetrical
+
+                data = list(range(n))
+
+                distribution = [binom.pmf(i, n, p) for i in data]
+
+                # Set up a list for stripe widths with scaled distribution values
+                stripews = []
+                for d in distribution:
+                    if d*amplitude <= 1: stripews.append(1)
+                    elif d*amplitude > maxwidth: stripews.append(maxwidth)
+                    else: stripews.append(round(d*amplitude))
+
+                # Width of the image decided by number of elements
+                width = sum(stripews) + gap*stripes
+                height = width
+            elif shape == "quadratic":
+                # Quadratic Function
+                # We know the graph passes (0, minwidth) and (midpoint, maxwidth)
+                # Here we treat c as minwidth, h as midpoint and k as maxwidth
+                # So as a(x-h)^2+k passes (0,c), a = (c-k)/h^2 since h > 0
+                n = stripes
+                c = minwidth
+                h = (n - 1) / 2 # h = -b/2a
+                k = maxwidth # k = f(h)
+                a = (c - k) / (h ** 2)
+
+                data = list(range(n))
+
+                quadratic = [a*((x-h)**2) + k for x in data]
+
+                # Set up a list for stripe widths with quadratic values
+                stripews = [round(q) for q in quadratic]
+
+                # Width of the image decided by number of elements
+                width = sum(stripews) + gap*stripes
+                height = width
+        
+        # Image output mode
+        if mode == "png":
+            ims = cairo.ImageSurface(cairo.FORMAT_ARGB32, width, height)
+            cr = cairo.Context(ims)
+        elif mode == "svg":
+            if animateIndex == 0:
+                svg = cairo.SVGSurface("static/out/output.svg", width, height)
+            else:
+                svg = cairo.SVGSurface("static/out/output"+str(animateIndex)+".svg", width, height)
+            cr = cairo.Context(svg)
+            
+        if image == "kiss":
+            # Background, default set to black in kiss
+            cr.set_source_rgb(0, 0, 0)
+        else:
+            # Otherwise default set to white
+            cr.set_source_rgb(1, 1, 1)
+        cr.rectangle(0, 0, width, height)
+        cr.fill()
+        
+        # Output logic for each image type
+        if (image == "doublequad"):
+            v = 0
+            while (v*round(maxwidth**offset) < 3*height):
+                h = 0
+                index = 0
+                prev_o = 0
+                while (index < num):
+                    if (colourpattern == "check"):
+                        if ((index+v) % 2 == 0):
+                            colour = colours[0] # White for even index+v
                         else:
                             colour = colours[1] # Black for odd index+v
-                    cr.set_source_rgba(colour[0], colour[1], colour[2], shapealpha)
-                elif (colourpattern == "random"):
+                        cr.set_source_rgba(colour[0], colour[1], colour[2], shapealpha)
+                    elif (colourpattern == "gradient"):
+                        if ((index+v) % 2 == 0):
+                            colour = colours[0] # White for even index+v
+                        else: # The index of the shape with gradient colours rather than black
+                            gradient_index = (index-1)//2 - v//2 - gradientpoint
+                            step = 1 / gradientwidth
+                            if (gradient_index > -gradientwidth and gradient_index <= 0): # Gradient to white
+                                colour = (gradientdelta * (gradientwidth+gradient_index) * step,
+                                    gradientdelta * (gradientwidth+gradient_index) * step,
+                                    gradientdelta * (gradientwidth+gradient_index) * step)
+                            elif (gradient_index > 0 and gradient_index < gradientwidth): # Gradient to black
+                                colour = (gradientdelta * (gradientwidth-gradient_index) * step,
+                                    gradientdelta * (gradientwidth-gradient_index) * step,
+                                    gradientdelta * (gradientwidth-gradient_index) * step)
+                            else:
+                                colour = colours[1] # Black for odd index+v
+                        cr.set_source_rgba(colour[0], colour[1], colour[2], shapealpha)
+                    elif (colourpattern == "random"):
 
-                    isAdjacent = randomP(2) < adjacentprobability
-                    isZebra = randomP(2) < adjacentprobability
-                    fstColour = [random.choice(colours)[0], random.choice(colours)[1], random.choice(colours)[2]]
-                    sndColour = [random.choice(colours)[0], random.choice(colours)[1], random.choice(colours)[2]]
-                    
-                    # Probablity for adjacent shapes having same colour or zebra pattern
-                    if(isAdjacent or isZebra):
-                        if(isZebra):
-                            for i in range (random.choice(ZEBRA)):
-                                # Set no offset for squares and dots
-                                if (shape == "square" or shape == "dot"): prev_o = 0
-                                cr.set_source_rgba(fstColour[0], fstColour[1], fstColour[2], shapealpha)
-                                if (index < valley):
-                                    if(ws1[index] >= 0):
-                                        printDoubleQuad(h, v*round(maxwidth**offset) - prev_o, round(maxwidth**offset), ws1[index], angle, cr, shape)
-                                        h += ws1[index]
-                                        prev_o += math.tan(angle * math.pi / 180) * ws1[index]
-                                        index += 1
-                                        if index >= num: break
-                                else:
-                                    if(ws2[index-valley] >= 0):
-                                        printDoubleQuad(h, v*round(maxwidth**offset) - prev_o, round(maxwidth**offset), ws2[index-valley], angle, cr, shape)
-                                        h += ws2[index-valley]
-                                        prev_o += math.tan(angle * math.pi / 180) * ws2[index-valley]
-                                        index += 1
-                                        if index >= num: break
-                                # Set no offset for squares and dots
-                                if (shape == "square" or shape == "dot"): prev_o = 0
-                                cr.set_source_rgba(sndColour[0], sndColour[1], sndColour[2], shapealpha)
-                                if (index < valley):
-                                    if(ws1[index] >= 0):
-                                        printDoubleQuad(h, v*round(maxwidth**offset) - prev_o, round(maxwidth**offset), ws1[index], angle, cr, shape)
-                                        h += ws1[index]
-                                        prev_o += math.tan(angle * math.pi / 180) * ws1[index]
-                                        index += 1
-                                        if index >= num: break
-                                else:
-                                    if(ws2[index-valley] >= 0):
-                                        printDoubleQuad(h, v*round(maxwidth**offset) - prev_o, round(maxwidth**offset), ws2[index-valley], angle, cr, shape)
-                                        h += ws2[index-valley]
-                                        prev_o += math.tan(angle * math.pi / 180) * ws2[index-valley]
-                                        index += 1
-                                        if index >= num: break
+                        isAdjacent = randomP(2) < adjacentprobability
+                        isZebra = randomP(2) < adjacentprobability
+                        fstColour = [random.choice(colours)[0], random.choice(colours)[1], random.choice(colours)[2]]
+                        sndColour = [random.choice(colours)[0], random.choice(colours)[1], random.choice(colours)[2]]
+                        
+                        # Probablity for adjacent shapes having same colour or zebra pattern
+                        if(isAdjacent or isZebra):
+                            if(isZebra):
+                                for i in range (random.choice(ZEBRA)):
+                                    # Set no offset for squares and dots
+                                    if (shape == "square" or shape == "dot"): prev_o = 0
+                                    cr.set_source_rgba(fstColour[0], fstColour[1], fstColour[2], shapealpha)
+                                    if (index < valley):
+                                        if(ws1[index] >= 0):
+                                            printDoubleQuad(h, v*round(maxwidth**offset) - prev_o, round(maxwidth**offset), ws1[index], angle, cr, shape)
+                                            h += ws1[index]
+                                            prev_o += math.tan(angle * math.pi / 180) * ws1[index]
+                                            index += 1
+                                            if index >= num: break
+                                    else:
+                                        if(ws2[index-valley] >= 0):
+                                            printDoubleQuad(h, v*round(maxwidth**offset) - prev_o, round(maxwidth**offset), ws2[index-valley], angle, cr, shape)
+                                            h += ws2[index-valley]
+                                            prev_o += math.tan(angle * math.pi / 180) * ws2[index-valley]
+                                            index += 1
+                                            if index >= num: break
+                                    # Set no offset for squares and dots
+                                    if (shape == "square" or shape == "dot"): prev_o = 0
+                                    cr.set_source_rgba(sndColour[0], sndColour[1], sndColour[2], shapealpha)
+                                    if (index < valley):
+                                        if(ws1[index] >= 0):
+                                            printDoubleQuad(h, v*round(maxwidth**offset) - prev_o, round(maxwidth**offset), ws1[index], angle, cr, shape)
+                                            h += ws1[index]
+                                            prev_o += math.tan(angle * math.pi / 180) * ws1[index]
+                                            index += 1
+                                            if index >= num: break
+                                    else:
+                                        if(ws2[index-valley] >= 0):
+                                            printDoubleQuad(h, v*round(maxwidth**offset) - prev_o, round(maxwidth**offset), ws2[index-valley], angle, cr, shape)
+                                            h += ws2[index-valley]
+                                            prev_o += math.tan(angle * math.pi / 180) * ws2[index-valley]
+                                            index += 1
+                                            if index >= num: break
+                            else:
+                                cr.set_source_rgba(random.choice(colours)[0], random.choice(colours)[1], random.choice(colours)[2], shapealpha)
+                                for i in range (random.choice(ADJACENT)):
+                                    # Set no offset for squares and dots
+                                    if (shape == "square" or shape == "dot"): prev_o = 0
+                                    if (index < valley):
+                                        if(ws1[index] >= 0):
+                                            printDoubleQuad(h, v*round(maxwidth**offset) - prev_o, round(maxwidth**offset), ws1[index], angle, cr, shape)
+                                            h += ws1[index]
+                                            prev_o += math.tan(angle * math.pi / 180) * ws1[index]
+                                            index += 1
+                                            if index >= num: break
+                                    else:
+                                        if(ws2[index-valley] >= 0):
+                                            printDoubleQuad(h, v*round(maxwidth**offset) - prev_o, round(maxwidth**offset), ws2[index-valley], angle, cr, shape)
+                                            h += ws2[index-valley]
+                                            prev_o += math.tan(angle * math.pi / 180) * ws2[index-valley]
+                                            index += 1
+                                            if index >= num: break
                         else:
+                            # Set no offset for squares and dots
+                            if (shape == "square" or shape == "dot"): prev_o = 0
                             cr.set_source_rgba(random.choice(colours)[0], random.choice(colours)[1], random.choice(colours)[2], shapealpha)
-                            for i in range (random.choice(ADJACENT)):
-                                # Set no offset for squares and dots
-                                if (shape == "square" or shape == "dot"): prev_o = 0
-                                if (index < valley):
-                                    if(ws1[index] >= 0):
-                                        printDoubleQuad(h, v*round(maxwidth**offset) - prev_o, round(maxwidth**offset), ws1[index], angle, cr, shape)
-                                        h += ws1[index]
-                                        prev_o += math.tan(angle * math.pi / 180) * ws1[index]
-                                        index += 1
-                                        if index >= num: break
-                                else:
-                                    if(ws2[index-valley] >= 0):
-                                        printDoubleQuad(h, v*round(maxwidth**offset) - prev_o, round(maxwidth**offset), ws2[index-valley], angle, cr, shape)
-                                        h += ws2[index-valley]
-                                        prev_o += math.tan(angle * math.pi / 180) * ws2[index-valley]
-                                        index += 1
-                                        if index >= num: break
-                    else:
+                            if (index < valley):
+                                if(ws1[index] >= 0):
+                                    printDoubleQuad(h, v*round(maxwidth**offset) - prev_o, round(maxwidth**offset), ws1[index], angle, cr, shape)
+                                    h += ws1[index]
+                                    prev_o += math.tan(angle * math.pi / 180) * ws1[index]
+                                    index += 1
+                                    if index >= num: break
+                            else:
+                                if(ws2[index-valley] >= 0):
+                                    printDoubleQuad(h, v*round(maxwidth**offset) - prev_o, round(maxwidth**offset), ws2[index-valley], angle, cr, shape)
+                                    h += ws2[index-valley]
+                                    prev_o += math.tan(angle * math.pi / 180) * ws2[index-valley]
+                                    index += 1
+                                    if index >= num: break
+                    if (colourpattern == "check" or colourpattern == "gradient"):
                         # Set no offset for squares and dots
                         if (shape == "square" or shape == "dot"): prev_o = 0
-                        cr.set_source_rgba(random.choice(colours)[0], random.choice(colours)[1], random.choice(colours)[2], shapealpha)
                         if (index < valley):
                             if(ws1[index] >= 0):
                                 printDoubleQuad(h, v*round(maxwidth**offset) - prev_o, round(maxwidth**offset), ws1[index], angle, cr, shape)
@@ -703,163 +740,158 @@ def output():
                                 prev_o += math.tan(angle * math.pi / 180) * ws2[index-valley]
                                 index += 1
                                 if index >= num: break
-                if (colourpattern == "check" or colourpattern == "gradient"):
-                    # Set no offset for squares and dots
-                    if (shape == "square" or shape == "dot"): prev_o = 0
-                    if (index < valley):
-                        if(ws1[index] >= 0):
-                            printDoubleQuad(h, v*round(maxwidth**offset) - prev_o, round(maxwidth**offset), ws1[index], angle, cr, shape)
-                            h += ws1[index]
-                            prev_o += math.tan(angle * math.pi / 180) * ws1[index]
-                            index += 1
-                            if index >= num: break
-                    else:
-                        if(ws2[index-valley] >= 0):
-                            printDoubleQuad(h, v*round(maxwidth**offset) - prev_o, round(maxwidth**offset), ws2[index-valley], angle, cr, shape)
-                            h += ws2[index-valley]
-                            prev_o += math.tan(angle * math.pi / 180) * ws2[index-valley]
-                            index += 1
-                            if index >= num: break
-            v += 1
-    elif (image == "blaze"):
-        a = 0
-        index = 0
-        while (a < 360):
-            if (colourpattern == "check"):
-                if (index % 2 == 0):
-                    colour = colours[1] # Black for even index
-                else:
-                    colour = colours[0] # White for odd index
-                cr.set_source_rgba(colour[0], colour[1], colour[2], shapealpha)
-                printBlaze(circlecentre[0], circleradius, circlecentre, angleoffset, angle, cr)
-            a += angle
-            index += 1
-    elif (image == "parallelogram"):
-        stripe_index = 0
-        for h in range(-int(width*.2), int(width*1.2), stripew):
-            shape_index = 0
-            # v offset for shapes to line up
-            offset = stripe_index*(side - math.tan(angle * math.pi / 180) * stripew)
-            v = -int(height*2-offset)
-            while v <= int(height*2):
-                if (colourpattern == "random"):
-                    isAdjacent = randomP(2) < adjacentprobability
-                    isZebra = randomP(2) < adjacentprobability
-                    fstColour = [random.choice(colours)[0], random.choice(colours)[1], random.choice(colours)[2]]
-                    sndColour = [random.choice(colours)[0], random.choice(colours)[1], random.choice(colours)[2]]
-                    
-                    # Probablity for adjacent shapes having same colour or zebra pattern
-                    if(isAdjacent or isZebra):
-                        if(isZebra):
-                            for i in range (random.choice(ZEBRA)):
-                                cr.set_source_rgba(fstColour[0], fstColour[1], fstColour[2], shapealpha)
-                                printParallelogram(h, v, side, stripew, angle, cr)
-                                v += side
-                                cr.set_source_rgba(sndColour[0], sndColour[1], sndColour[2], shapealpha)
-                                printParallelogram(h, v, side, stripew, angle, cr)
-                                v += side
-                        else:
-                            cr.set_source_rgba(random.choice(colours)[0], random.choice(colours)[1], random.choice(colours)[2], shapealpha)
-                            for i in range (random.choice(ADJACENT)):
-                                printParallelogram(h, v, side, stripew, angle, cr)
-                                v += side
-                    else:
-                        cr.set_source_rgba(random.choice(colours)[0], random.choice(colours)[1], random.choice(colours)[2], shapealpha)
-                        printParallelogram(h, v, side, stripew, angle, cr)
-                        v += side
-                elif (colourpattern == "check"):
-                    if (shape_index % 2 == 0):
+                v += 1
+            
+            # Toggle animator feature with steps
+            if animateIndex != 0:
+                if isvalley: valley += valleystep
+
+        elif (image == "blaze"):
+            a = 0
+            index = 0
+            while (a < 360):
+                if (colourpattern == "check"):
+                    if (index % 2 == 0):
                         colour = colours[1] # Black for even index
                     else:
                         colour = colours[0] # White for odd index
                     cr.set_source_rgba(colour[0], colour[1], colour[2], shapealpha)
-                    printParallelogram(h, v, side, stripew, angle, cr)
-                    v += side
-                shape_index += 1
-            stripe_index += 1
-    elif (image == "kiss"):
-        colour = colours[0] # White
-        cr.set_source_rgba(colour[0], colour[1], colour[2],shapealpha)
-        printKiss(height, base, kisspoint, curve, distance, accuracy, cr)
-    elif (image == "waves"):
-        index = 0
-        v = 0
-        h = 0
-        while (v <= height):
-            if (index % 2 == 0):
-                colour = colours[0] # White for even index
-                cr.set_source_rgba(colour[0], colour[1], colour[2], shapealpha)
-            else:
-                colour = colours[1] # Black with gradient for odd index
-                r = colour[0]
-                g = colour[1]
-                b = colour[2]
-                step = 1 / (height/2)
-                gradient = (height/2-abs(v-height/2))*gradientdelta*step
-                # Add colour gradient for r/g/b
-                if isredgradient:
-                    r = gradient
-                if isgreengradient:
-                    g = gradient
-                if isbluegradient:
-                    b = gradient
-                cr.set_source_rgba(r, g, b, shapealpha)
-            printWaves(0, amplitude, period, v, h, width, accuracy, cr)
-
-            index += 1
-            v += verticaloffset
-            h += horizontaloffset
-    elif image == "stripes":
-        if orientation == "V":
-            upper_bound = width
-            stripeh = height
-        elif orientation == "H":
-            upper_bound = height
-            stripeh = width
-        
-        if shape == "normal":
-            h = 0
-            # Choose a colour with weighted possibilities
-            colour = random.choices(population=colours, weights=colourweights, k=1)
-            #random.randint(0, len(colours)-1)
-            while (h < upper_bound):
-                isAdjacent = randomP(2) < adjacentprobability
-                # Probablity for adjacent stripes having same colour
-                previous = colour
-                while(previous[0] == colour[0]):
-                    colour = random.choices(population=colours, weights=colourweights, k=1)
-                cr.set_source_rgba(colour[0][0], colour[0][1], colour[0][2], shapealpha)
-                for i in range (random.choice(ADJACENT)):
-                    printStripes(h, stripeh, stripew, orientation, cr)
-                    h += stripew
-                    if (not isAdjacent): break
-        elif shape == "binomial" or shape == "quadratic":
-            h = 0
+                    printBlaze(circlecentre[0], circleradius, circlecentre, angleoffset, angle, cr)
+                a += angle
+                index += 1
+        elif (image == "parallelogram"):
+            stripe_index = 0
+            for h in range(-int(width*.2), int(width*1.2), stripew):
+                shape_index = 0
+                # v offset for shapes to line up
+                offset = stripe_index*(side - math.tan(angle * math.pi / 180) * stripew)
+                v = -int(height*2-offset)
+                while v <= int(height*2):
+                    if (colourpattern == "random"):
+                        isAdjacent = randomP(2) < adjacentprobability
+                        isZebra = randomP(2) < adjacentprobability
+                        fstColour = [random.choice(colours)[0], random.choice(colours)[1], random.choice(colours)[2]]
+                        sndColour = [random.choice(colours)[0], random.choice(colours)[1], random.choice(colours)[2]]
+                        
+                        # Probablity for adjacent shapes having same colour or zebra pattern
+                        if(isAdjacent or isZebra):
+                            if(isZebra):
+                                for i in range (random.choice(ZEBRA)):
+                                    cr.set_source_rgba(fstColour[0], fstColour[1], fstColour[2], shapealpha)
+                                    printParallelogram(h, v, side, stripew, angle, cr)
+                                    v += side
+                                    cr.set_source_rgba(sndColour[0], sndColour[1], sndColour[2], shapealpha)
+                                    printParallelogram(h, v, side, stripew, angle, cr)
+                                    v += side
+                            else:
+                                cr.set_source_rgba(random.choice(colours)[0], random.choice(colours)[1], random.choice(colours)[2], shapealpha)
+                                for i in range (random.choice(ADJACENT)):
+                                    printParallelogram(h, v, side, stripew, angle, cr)
+                                    v += side
+                        else:
+                            cr.set_source_rgba(random.choice(colours)[0], random.choice(colours)[1], random.choice(colours)[2], shapealpha)
+                            printParallelogram(h, v, side, stripew, angle, cr)
+                            v += side
+                    elif (colourpattern == "check"):
+                        if (shape_index % 2 == 0):
+                            colour = colours[1] # Black for even index
+                        else:
+                            colour = colours[0] # White for odd index
+                        cr.set_source_rgba(colour[0], colour[1], colour[2], shapealpha)
+                        printParallelogram(h, v, side, stripew, angle, cr)
+                        v += side
+                    shape_index += 1
+                stripe_index += 1
+        elif (image == "kiss"):
+            colour = colours[0] # White
+            cr.set_source_rgba(colour[0], colour[1], colour[2],shapealpha)
+            printKiss(height, base, kisspoint, curve, distance, accuracy, cr)
+        elif (image == "waves"):
             index = 0
-            while (h < width):
+            v = 0
+            h = 0
+            while (v <= height):
                 if (index % 2 == 0):
-                    colour = colours[0] # Blue for even index
+                    colour = colours[0] # White for even index
+                    cr.set_source_rgba(colour[0], colour[1], colour[2], shapealpha)
                 else:
-                    colour = colours[1] # Red for odd index
-                cr.set_source_rgba(colour[0], colour[1], colour[2], shapealpha)
-                printStripes(h, stripeh, stripews[index], orientation, cr)
-                h += stripews[index]
-
-                colour = colours[2] # White for gaps
-                cr.set_source_rgba(colour[0], colour[1], colour[2], shapealpha)
-                printStripes(h, stripeh, gap, orientation, cr)
-                h += gap
+                    colour = colours[1] # Black with gradient for odd index
+                    r = colour[0]
+                    g = colour[1]
+                    b = colour[2]
+                    step = 1 / (height/2)
+                    gradient = (height/2-abs(v-height/2))*gradientdelta*step
+                    # Add colour gradient for r/g/b
+                    if isredgradient:
+                        r = gradient
+                    if isgreengradient:
+                        g = gradient
+                    if isbluegradient:
+                        b = gradient
+                    cr.set_source_rgba(r, g, b, shapealpha)
+                printWaves(0, amplitude, period, v, h, width, accuracy, cr)
 
                 index += 1
-        
-    if mode == 'png':
-        ims.write_to_png("static/out/output.png")
-    
+                v += verticaloffset
+                h += horizontaloffset
+        elif image == "stripes":
+            if orientation == "V":
+                upper_bound = width
+                stripeh = height
+            elif orientation == "H":
+                upper_bound = height
+                stripeh = width
+            
+            if shape == "normal":
+                h = 0
+                # Choose a colour with weighted possibilities
+                colour = random.choices(population=colours, weights=colourweights, k=1)
+                #random.randint(0, len(colours)-1)
+                while (h < upper_bound):
+                    isAdjacent = randomP(2) < adjacentprobability
+                    # Probablity for adjacent stripes having same colour
+                    previous = colour
+                    while(previous[0] == colour[0]):
+                        colour = random.choices(population=colours, weights=colourweights, k=1)
+                    cr.set_source_rgba(colour[0][0], colour[0][1], colour[0][2], shapealpha)
+                    for i in range (random.choice(ADJACENT)):
+                        printStripes(h, stripeh, stripew, orientation, cr)
+                        h += stripew
+                        if (not isAdjacent): break
+            elif shape == "binomial" or shape == "quadratic":
+                h = 0
+                index = 0
+                while (h < width):
+                    if (index % 2 == 0):
+                        colour = colours[0] # Blue for even index
+                    else:
+                        colour = colours[1] # Red for odd index
+                    cr.set_source_rgba(colour[0], colour[1], colour[2], shapealpha)
+                    printStripes(h, stripeh, stripews[index], orientation, cr)
+                    h += stripews[index]
+
+                    colour = colours[2] # White for gaps
+                    cr.set_source_rgba(colour[0], colour[1], colour[2], shapealpha)
+                    printStripes(h, stripeh, gap, orientation, cr)
+                    h += gap
+
+                    index += 1
+
+        if mode == "png":
+            if animateIndex == 0:
+                ims.write_to_png("static/out/output.png")
+            else:
+                ims.write_to_png("static/out/output"+str(animateIndex)+".png")
+
     initShapeAlpha = request.form['shapeAlpha_input']
     if image == "doublequad" or image == "waves":
         gradientdelta = request.form.get('gradientDelta_input', type=float)
     
     if image == "doublequad":
+        valley = request.form.get('valley_input', type=int)
+        imgs = request.form.get('imgs_input', type=int)
+        if num - valley + 1 < imgs:
+            imgs = num - valley + 1
         if valley == 1:
             formulaLeftMsg = "N/A".encode('utf-8')
         else:
@@ -939,6 +971,11 @@ def output():
         initZebraNums=initZebraNums,
         formulaLeftMsg=formulaLeftMsg,
         formulaRightMsg=formulaRightMsg,
+        isAnimator=isanimator,
+        initImgs = imgs,
+        initInterval = interval,
+        isValley=isvalley,
+        initValleyStep = valleystep,
         graph="out/output."+mode)
     elif imageType == 'kiss':
         return render_template("kiss.html",

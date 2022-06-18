@@ -11,7 +11,7 @@
 		<br>
 		<div class="container" style="display: flex;">
         	<div style="width: 50%;">
-            	<img src="{{ url_for('static', filename=graph) }}" width="90%" onclick="showImg()" class="output" />
+            	<img id="outputImg" src="{{ url_for('static', filename=graph) }}" width="90%" onclick="showImg()" class="output" />
             	<p>Double Quadratic<p>
         	</div>
         	<div style="flex-grow: 1;">
@@ -39,6 +39,8 @@
 					<br>
 					<span>Valley Point</span>
 					<input type="number" id="valley" name="valley_input" min="1" max="100" step="1" value="{{ initValley }}" required>
+					<span id="valleyStepSpan" {% if isValley and isAnimator%} style="display: inline;" {% else %} style="display: none;" {% endif %}>Step</span>
+					<input type="number" id="valleyStep" name="valleyStep_input" min="1" max="10" step="1" value="{{ initValleyStep }}" required {% if isValley and isAnimator%} style="display: inline;" {% else %} style="display: none;" {% endif %}>
 					<br>
 					<span>Column Number</span>
 					<input type="number" id="num" name="num_input" required min="1" max="100" step="1" value="{{ initNum }}" required>
@@ -92,7 +94,7 @@
 						<input type="number" id="gradientWidth" name="gradientWidth_input" min="0" max="100" step="1" value="{{ initGradientWidth }}" required>
 						<br>
 					</div>
-					<span>Take &#x1d432; with respect to column index &#x1d499; increasingly from left to right of the image.</span>
+					<span>Take &#x1d432; with respect to column index &#x1d499; increasingly from left to right.</span>
 					<div class="container" style="display: flex;">
 						<div style="width: 50%;" id="child-1">
 							<span>Left Quadratic Formula</span>
@@ -105,7 +107,22 @@
 					</div>
 					<span>The width for each column is calculated by &#x1d432;<sup>Offset</sup>, i.e.</span>
 					<h2>width = &#x1d432;<sup>{{initOffset}}</sup></h2>
-					<input type="submit" value="Generate" class="button">
+					<input type="checkbox" id="isAnimator" name="isAnimator_input" onclick="toggleAnimator(this)" {% if isAnimator %} checked {% endif %}>
+					<label for="isAnimator" class="checkBoxLabel">Animator</label>
+					<div id="animatorDiv" {% if isAnimator %} style="display: block;" {% else %} style="display: none;" {% endif %}>
+						<span>Total Images</span>
+						<input type="number" id="imgs" name="imgs_input" required min="1" max="30" step="1" value="{{ initImgs }}" required>
+						<span>Interval (s)</span>
+						<input type="number" id="interval" name="interval_input" required min="0.01" max="2" step="0.01" value="{{ initInterval }}" required>
+						<br>
+						<span>Changing Variables</span>
+						<br>
+						<input type="checkbox" id="isValley" name="isValley_input" onclick="toggleStep(this)" {% if isValley %} checked {% endif %}>
+						<label for="isValley" class="checkBoxLabel">Valley Point</label>
+					</div>
+					<br>
+					<input type="submit" value="Generate Image" class="button">
+					<button id="showAnimation" type="button" onclick="changeImg()" {% if isAnimator %} style="display: inline;" {% else %} style="display: none;" {% endif %}>Show Animation</button>
 				</form>
         	</div>
     	</div>
@@ -227,6 +244,39 @@
 				}
 			}
 
+			function toggleAnimator(element) {
+				animatorDiv = document.getElementById("animatorDiv");
+				showAnimation = document.getElementById("showAnimation");
+
+				if (element.checked) {
+					animatorDiv.style.display = "block";
+					showAnimation.style.display = "inline";
+				} else {
+					animatorDiv.style.display = "none";
+					showAnimation.style.display = "none";
+				}
+			}
+
+			function toggleStep(element) {
+				isAnimator = document.getElementById("isAnimator");
+				switch(element.name) {
+					case "isValley_input":
+						stepBox = document.getElementById("valleyStep");
+						stepSpan = document.getElementById("valleyStepSpan");
+						break;
+					default:
+						stepBox = "undefined";
+						stepSpan = "undefined";
+				}
+				if (element.checked && isAnimator) {
+					stepBox.style.display = "inline";
+					stepSpan.style.display = "inline";
+				} else {
+					stepBox.style.display = "none";
+					stepSpan.style.display = "none";
+				}
+			}
+
 			var imgSrc = "{{ url_for('static', filename=graph) }}"
 			if (imgSrc == "/static/out/output.png" || imgSrc == "/static/out/output.svg") {
 				document.querySelector("img.output").style.cursor = "pointer";
@@ -236,6 +286,30 @@
 				if (imgSrc == "/static/out/output.png" || imgSrc == "/static/out/output.svg") {
 					window.location.href='{{ url_for("fullScreen") }}';
 				}
+			}
+
+			var animator;
+
+			function changeImg() {
+				mode = document.getElementById("mode").value;
+				imgs = document.getElementById("imgs").value;
+				interval = document.getElementById("interval").value;
+				outputImg = document.getElementById("outputImg");
+
+				i = 1;
+				animator = setInterval(function() {
+					if (mode == "png") {
+						outputImg.src = "/static/out/output"+i+".png"
+					} else if (mode == "svg") {
+						outputImg.src = "/static/out/output"+i+".svg"
+					}
+
+					if(i < imgs){
+						i++;
+					} else {
+						i = 1;
+					}
+				}, interval*1000);
 			}
     	</script>
 	</body>
