@@ -89,6 +89,8 @@
 						<br>
 						<span>Gradient Point</span>
 						<input type="number" id="gradientPoint" name="gradientPoint_input" min="-100" max="100" step="1" value="{{ initGradientPoint }}" required>
+						<span id="gradientPointStepSpan" {% if isGradientPoint and isAnimator%} style="display: inline;" {% else %} style="display: none;" {% endif %}>Step</span>
+						<input type="number" id="gradientPointStep" name="gradientPointStep_input" min="1" max="10" step="1" value="{{ initGradientPointStep }}" required {% if isGradientPoint and isAnimator%} style="display: inline;" {% else %} style="display: none;" {% endif %}>
 						<br>
 						<span>Gradient Width</span>
 						<input type="number" id="gradientWidth" name="gradientWidth_input" min="0" max="100" step="1" value="{{ initGradientWidth }}" required>
@@ -115,10 +117,13 @@
 						<span>Interval (s)</span>
 						<input type="number" id="interval" name="interval_input" required min="0.01" max="2" step="0.01" value="{{ initInterval }}" required>
 						<br>
+						<br>
 						<span>Changing Variables</span>
 						<br>
 						<input type="checkbox" id="isValley" name="isValley_input" onclick="toggleStep(this)" {% if isValley %} checked {% endif %}>
 						<label for="isValley" class="checkBoxLabel">Valley Point</label>
+						<input type="checkbox" id="isGradientPoint" name="isGradientPoint_input" onclick="toggleStep(this)" {% if isGradientPoint %} checked {% endif %}>
+						<label for="isGradientPoint" class="checkBoxLabel">Gradient Point</label>
 					</div>
 					<br>
 					<input type="submit" value="Generate Image" class="button">
@@ -263,6 +268,10 @@
 					case "isValley_input":
 						stepBox = document.getElementById("valleyStep");
 						stepSpan = document.getElementById("valleyStepSpan");
+						break;
+					case "isGradientPoint_input":
+						stepBox = document.getElementById("gradientPointStep");
+						stepSpan = document.getElementById("gradientPointStepSpan");
 						break;
 					default:
 						stepBox = "undefined";

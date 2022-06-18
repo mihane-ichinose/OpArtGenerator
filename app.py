@@ -3,7 +3,7 @@
 
 import random, math
 # Use CFFI version - cairocffi instead of normal PyCairo library for heroku deployment.
-import cairocffi as cairo
+import cairo
 from scipy.stats import binom
 from flask import Flask, render_template, request
 
@@ -273,6 +273,8 @@ def selectType():
         initInterval = 0.4,
         isValley = True,
         initValleyStep = 1,
+        isGradientPoint = False,
+        initGradientPointStep = 1,
         graph="img/home_img.jpg")
     elif imageType == 'kiss':
         return render_template("kiss.html",
@@ -347,6 +349,8 @@ def output():
         interval = request.form.get('interval_input', type=float)
         isvalley = request.form.get('isValley_input', type=bool)
         valleystep = request.form.get('valleyStep_input', type=int)
+        isgradientpoint = request.form.get('isGradientPoint_input', type=bool)
+        gradientpointstep = request.form.get('gradientPointStep_input', type=int)
     
     # Blaze study
     if image == "blaze":
@@ -745,6 +749,7 @@ def output():
             # Toggle animator feature with steps
             if animateIndex != 0:
                 if isvalley: valley += valleystep
+                if isgradientpoint: gradientpoint += gradientpointstep
 
         elif (image == "blaze"):
             a = 0
@@ -889,6 +894,7 @@ def output():
     
     if image == "doublequad":
         valley = request.form.get('valley_input', type=int)
+        gradientpoint = request.form.get('gradientPoint_input', type=int)
         imgs = request.form.get('imgs_input', type=int)
         if num - valley + 1 < imgs:
             imgs = num - valley + 1
@@ -976,6 +982,8 @@ def output():
         initInterval = interval,
         isValley=isvalley,
         initValleyStep = valleystep,
+        isGradientPoint = isgradientpoint,
+        initGradientPointStep = gradientpointstep,
         graph="out/output."+mode)
     elif imageType == 'kiss':
         return render_template("kiss.html",
