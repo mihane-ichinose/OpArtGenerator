@@ -270,7 +270,7 @@ def selectType():
         formulaRightMsg="N/A".encode('utf-8'),
         isAnimator=False,
         initImgs = 10,
-        initInterval = 0.1,
+        initInterval = 0.4,
         isValley = True,
         initValleyStep = 1,
         graph="img/home_img.jpg")
