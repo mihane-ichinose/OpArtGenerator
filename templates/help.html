@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title>Op Art Generator and Animator</title>
+		<link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='img/favicon.ico') }}">
+		<link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+	</head>
+	<body class="help">
+		<h1 style="text-align: center;">Welcome to Op Art Generator and Animator</h1>
+		<br>
+		<button onclick="history.back()">Back</button>
+		<h1>Objective</h1>
+		<p>This project aims to use computer technology to generate images similar to those produced by Bridget Riley, but allow the computer user to adjust the parameters used to generate the images.</p>
+		<br>
+		<h1>How to Use</h1>
+		<p>Users can generate Op Art image based on different categories of shape pattern with given parameters as listed below:</p>
+		<br>
+		<h2>Public Arguments</h2>
+		<ul>
+			<li><b>Transparency</b>: set transparency for the image</li>
+			<li><b>Mode</b>: set the image output format to PNG or SVG</li>
+		</ul>
+		<br>
+		<h2>Parallelogram</h2>
+		<img src="../static/img/parallelogram.jpg" class="help">
+		<p>Colour pattern can be set to Random or Check.</p>
+		<ul>
+			<li><b>Angle</b>: inner angle of the parallelogram</li>
+			<li><b>Number of Stripes</b>: total columns of parallelogram</li>
+			<li><b>Image Height</b>: height of the image</li>
+			<li><b>Length of Each Parallelogram</b>: set how long each parallelogram is in vertical</li>
+			<li><b>Stripe Width</b>: width of each column of parallelogram</li>
+		</ul>
+		<br>
+		<h2>Blaze</h2>
+		<img src="../static/img/blaze.jpg" class="help">
+		<p>Colour pattern can be set to Check.</p>
+		<ul>
+			<li><b>Angle</b>: the angle that evenly divides each sector</li>
+			<li><b>Circle Radius</b>: list of circle radius</li>
+			<li><b>Circle Centres</b>: list of circle centres</li>
+			<li><b>Angle Offset</b>: the angle between the vertical direction and the centre of each circle centre to its starting point</li>
+			<li><b>Row</b>: the row number to insert after</li>
+		</ul>
+		<br>
+		<h2>Double Quadratic</h2>
+		<img src="../static/img/doublequad.jpg" class="help">
+		<p>Colour pattern can be set to Random, Check or Gradient.</p>
+		<ul>
+			<li><b>Minimum Width</b>: minimum width of the shape at the valley</li>
+			<li><b>Maximum Width</b>: maximum width of the shape at both ends</li>
+			<li><b>Valley Point</b>: location of the valley</li>
+			<li><b>Column Number</b>: total columns of the shape</li>
+			<li><b>Offset</b>: a value that applies power to the width of each shape</li>
+			<li><b>Shape</b>: type of shape to generate, can be set to Square, Dot or Parallelogram</li>
+		</ul>
+		<h3>Parallelogram</h3>
+		<p>Parameter needs when the shape is set to Parallelogram.</p>
+		<ul>
+			<li><b>Angle</b>: inner angle of the parallelogram</li>
+		</ul>
+		<br>
+		<h2>Kiss</h2>
+		<img src="../static/img/kiss.jpg" class="help">
+		<p>No colour pattern required.</p>
+		<ul>
+			<li><b>Image Height</b>: height of the image</li>
+			<li><b>Shape Base</b>: distance of the base to the top of the image</li>
+			<li><b>Kiss Point</b>: x value of the gap located</li>
+			<li><b>Curve (Quadratic Coefficient)</b>: quadratic coefficient for the curve</li>
+			<li><b>Narrowest Distance</b>: width of the gap</li>
+			<li><b>Accuracy</b>: the value of x increments when sampling the curve</li>
+		</ul>
+		<br>
+		<h2>Waves</h2>
+		<img src="../static/img/waves.jpg" class="help">
+		<p>No colour pattern required.</p>
+		<ul>
+			<li><b>Image Width</b>: width of the image</li>
+			<li><b>Amplitude</b>: amplitude of the sine wave</li>
+			<li><b>Period</b>: period of the sine wave</li>
+			<li><b>Vertical Offset</b>: vertical offset of the sine wave, also the distance between waves</li>
+			<li><b>Horizontal Offset</b>: horizontal offset of the sine wave, also the offset between top and bottom curves in one wave shape</li>
+			<li><b>Accuracy</b>: the value of x increments when sampling the sine waves</li>
+			<li><b>Gradient Colour</b>: colour of the gradient in the middle, can be set to Red, Green, Blue or any of the mixture between them</li>
+		</ul>
+		<br>
+		<h2>Stripes</h2>
+		<img src="../static/img/stripes.jpg" class="help">
+		<p>Colour pattern can be set to Random.</p>
+		<ul>
+			<li><b>Number of Stripes</b>: total columns/rows of stripes</li>
+			<li><b>Orientation</b>: can be set to Vertical or Horizontal</li>
+			<li><b>Shape</b>: can be set to Normal, Binomial Distribution or Quadratic Formula:</li>	
+		</ul>
+		<h3>Normal</h3>
+		<p>Normal stripes pattern with random given colours.</p>
+		<ul>
+			<li><b>Stripe Width</b>: width of each stripe</li>
+			<li><b>Colour Weights</b>: the weights of possibilities to randomly choose each given colour</li>
+		</ul>
+		<h3>Binomial Distribution</h3>
+		<p>Gradually increase the width of stripes to the middle using binomial distribution.</p>
+		<ul>
+			<li><b>Gap Width</b>: gap between stripes</li>
+			<li><b>Maximum Stripe Width</b>: maximum width for the stripes in the middle</li>
+			<li><b>Amplitude</b>: value to scale up widths</li>
+		</ul>
+		<h3>Quadratic Formula</h3>
+		<p>Gradually increase the width of stripes to the middle using quadratic formula.</p>
+		<ul>
+			<li><b>Gap Width</b>: gap between stripes</li>
+			<li><b>Maximum Stripe Width</b>: maximum width for the stripes in the middle</li>
+			<li><b>Minimum Stripe Width</b>: minimum width for the stripes at both ends</li>
+		</ul>
+		<br>
+		<h2>Colour Pattern</h2>
+		<p>Can be set to Random, Check or Gradient based on various shape patterns.</p>
+		<h3>Random</h3>
+		<ul>
+			<li><b>Adjacent Probability</b>: probability to generate colours adjacently (and zebra pattern)</li>
+			<li><b>Adjacent Numbers</b>: list of number of shapes that have adjacent colours</li>
+			<li><b>Zebra Pattern Numbers</b>: list of number of shapes that repeat in a zebra pattern</li>
+		</ul>
+		<h3>Check</h3>
+		<p>No parameters needed, just black and white.</p>
+		<h3>Gradient</h3>
+		<ul>
+			<li><b>Gradient Delta</b>: strength of the gradient</li>
+			<li><b>Gradient Point</b>: location of the gradient stripe</li>
+			<li><b>Gradient Width</b>: width of the gradient stripe</li>
+		</ul>
+		<br>
+		<h2>Animator</h2>
+		<p>The animator is temporarily only available in the Double Quadratic shape pattern.</p>
+		<ul>
+			<li><b>Animator</b>: toggle on and off the animator</li>
+			<li><b>Total Images</b>: total number of images generate and playback in sequence</li>
+			<li><b>Interval (s)</b>: time interval between playback of each image in seconds</li>
+			<li><b>Changing Variables</b>: the parameters that is selected to change in the sequence incrementing by a given step value from users</li>
+		</ul>
+		<br>
+		<h1>Abstract</h1>
+		<p>Optical Art, also known as Op Art, is a genre of visual art specifically uses optical illusions to create bizarre artistic effects. Usually op arts are made by artists using periodic arrangement of lines, shapes, colours, etc. By applying optical effect to a flat picture, it can trick viewers' eyes into thinking it is three-dimensional.</p>
+		<p>Op Art became extremely famous and popular in the 1960s. People used them as design for their clothes, CD covers, houses and so on. Op Art had even been adapted as a television commercial back then.</p>
+		<p>Regardless of op art being well-known centuries ago, it is still a magnificent form of art bringing vibrant effect and strong emotion to viewers. With the development of computing technology, digital art has become common to public, more and more people are willing to create their artwork using a computer rather by hand.</p>
+		<p>Despite of existing software that works in artistic aspects, lack of simplicity and professional focus makes Op Art artists difficult to plan and design their artwork based on computer. Therefore, there has been a high demand on designing such program that could aim better on Op Art and give better inspirations to those who work in this aspect.</p>
+		<p>This help guide introduces the development and evolution of an Op Art Generator program which help attracting the interest in Op Art from people and giving better understanding in Op Art for professional artists.</p>
+		<br>
+		<h1>Usage</h1>
+		<p>The program aims on helping users in following scenarios:</p>
+		<ul>
+			<li>For users who would like to get a basic knowledge of what op art is and play around with the generated image.</li>
+			<li>For art learners and students to study with op art, especially artworks from Bridget Riley.</li> 
+			<li>Generate and adjust shapes and patterns of the artwork for professional artists who want to get inspirations and ideas when create their own optical illusion form of artworks.</li>
+			<li>Save the op art image to make further use and process.</li>
+		</ul>
+		<br>
+		<h1>Advantages</h1>
+		<p>Compare to traditional hand-drawing form of op art creation, the op art generator program has following advantages:</p>
+		<ul>
+			<li>It generates artworks in almost no time and is way faster.</li>
+			<li>Users can treat the program as a draft creator and plan for their artwork in advance.</li>
+			<li>Its artwork can be saved and stored in local files in digital form, convenient to transfer or share.</li>
+		</ul>
+		<br>
+		<h1>Contributor</h1>
+		<ul>
+			<li>Author: Shitian Jin (GitHub username: <a href="https://github.com/mihane-ichinose" target="_blank">mihane-ichinose</a>)</li>
+			<li>Supervisor: <a href="https://www.imperial.ac.uk/people/p.mcbrien" target="_blank">Peter McBrien</a></li> 
+			<li>Second Marker: <a href="https://www.imperial.ac.uk/people/n.wu" target="_blank">Nicolas Wu</a></li>
+		</ul>
+		<br>
+		<button onclick="history.back()">Back</button>
+	</body>
+</html>

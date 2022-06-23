@@ -26,6 +26,10 @@ html, body:not(.bg) {
 	text-align: center;
 }
 
+:root.help, body.help {
+	text-align: left;
+}
+
 .center {
 	margin-left: auto;
 	margin-right: auto;
@@ -43,12 +47,14 @@ h1, h2, h3 {
 	color: var(--font-colour);
 }
 
-p, span, th, td, label {
+p, span, th, td, label, li {
 	font-weight: 500;
 	color: var(--font-colour);
 	font-size: 20px;
 	line-height: 2;
 }
+
+
 
 label.checkBoxLabel {
 	cursor: pointer;
@@ -193,7 +199,7 @@ div.helpGuide {
 	margin: 20px auto;
 }
 
-img.tbn-img {
+img.tbn-img, img.help {
 	width: 200px;
 	margin: 10px auto;
 }
@@ -203,6 +209,10 @@ img.tbn-helpimg {
 	vertical-align: middle;
 	width: 50px;
 	margin: 10px auto;
+}
+
+img.help {
+	margin: 10px 0;
 }
 
 img.full {
@@ -218,6 +228,15 @@ p.tbn-p, span.tbn-span {
 
 span.tbn-span {
 	margin-left: 10px;
+}
+
+a {
+	color: var(--border-colour);
+	text-decoration: none;
+}
+
+a:hover, a:active {
+	color: var(--button-colour);
 }
 
 /*.bg{

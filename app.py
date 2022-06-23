@@ -320,6 +320,8 @@ def selectType():
         formulaBinomialMsg="N/A".encode('utf-8'),
         formulaQuadraticMsg="N/A".encode('utf-8'),
         graph="img/home_img.jpg")
+    elif imageType == "help":
+        return render_template("help.html")
 
 @app.route('/output', methods = ['POST', 'GET'])
 def output():
