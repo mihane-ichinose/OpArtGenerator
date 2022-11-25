@@ -1,6 +1,5 @@
-# cairocffi==1.3.0
-# cffi==1.15.0
-pycairo==1.20.1
+cairocffi==1.3.0
+cffi==1.15.0
 click==8.1.3
 Flask==2.1.2
 gunicorn==20.1.0
