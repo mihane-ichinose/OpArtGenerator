@@ -28,13 +28,16 @@ Compare to traditional hand-drawing form of op art creation, the op art generato
 - Its artwork can be saved and stored in local files in digital form, convenient to transfer or share.
 
 ## Program Structure
+### Update
+Due to free plan ends from 28 Nov 2022 on Heroku platform, the web app is moved to Fly.io from now on.
+
 The program is in a form of web app and can be accessed via the link:
-https://opartgenerator.herokuapp.com/home
+https://opartgenerator.fly.dev/
 
 The program structure is basically:
 - Python with Flask framework as back-end;
 - HTML, JavaScript and CSS as GUI;
-- deployed onto Heroku cloud platform as web app.
+- deployed onto Fly.io cloud platform as web app.
 
 Below is the whole program UML chart:
 
